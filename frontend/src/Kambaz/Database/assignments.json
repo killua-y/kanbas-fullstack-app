@@ -1,0 +1,83 @@
+[
+  {
+    "_id": "A101",
+    "course": "1234",
+    "title": "A1 - ENV + HTML",
+    "description": "Setting up the development environment and writing basic HTML.",
+    "dueDate": "2024-05-13T23:59",
+    "availableFrom": "2024-05-06T00:00",
+    "points": 100
+  },
+  {
+    "_id": "A102",
+    "course": "1234",
+    "title": "A2 - CSS + BOOTSTRAP",
+    "description": "Styling web pages using CSS and Bootstrap.",
+    "dueDate": "2024-05-20T23:59",
+    "availableFrom": "2024-05-13T00:00",
+    "points": 80
+  },
+  {
+    "_id": "A103",
+    "course": "1234",
+    "title": "A3 - JAVASCRIPT + REACT",
+    "description": "Building dynamic web applications with JavaScript and React.",
+    "dueDate": "2024-05-27T23:59",
+    "availableFrom": "2024-05-20T00:00",
+    "points": 90
+  },
+  {
+    "_id": "A201",
+    "course": "1800",
+    "title": "A1 - Logic and Proofs",
+    "description": "Understanding logic statements and proof techniques.",
+    "dueDate": "2024-06-10T23:59",
+    "availableFrom": "2024-06-03T00:00",
+    "points": 70
+  },
+  {
+    "_id": "A202",
+    "course": "1800",
+    "title": "A2 - Set Theory",
+    "description": "Learning about sets, Venn diagrams, and set operations.",
+    "dueDate": "2024-06-17T23:59",
+    "availableFrom": "2024-06-10T00:00",
+    "points": 60
+  },
+  {
+    "_id": "A203",
+    "course": "1800",
+    "title": "A3 - Graph Theory",
+    "description": "Exploring graphs, trees, and their applications in CS.",
+    "dueDate": "2024-06-24T23:59",
+    "availableFrom": "2024-06-17T00:00",
+    "points": 94
+  },
+  {
+    "_id": "A301",
+    "course": "2510",
+    "title": "A1 - Java Basics",
+    "description": "Learning Java syntax, variables, and data types.",
+    "dueDate": "2024-07-05T23:59",
+    "availableFrom": "2024-06-28T00:00",
+    "points": 92
+  },
+  {
+    "_id": "A302",
+    "course": "2510",
+    "title": "A2 - Object-Oriented Programming",
+    "description": "Understanding classes, objects, and encapsulation.",
+    "dueDate": "2024-07-12T23:59",
+    "availableFrom": "2024-07-05T00:00",
+    "points": 99
+  },
+  {
+    "_id": "A303",
+    "course": "2510",
+    "title": "A3 - Java Collections and Streams",
+    "description": "Working with Java lists, sets, and streams.",
+    "dueDate": "2024-07-19T23:59",
+    "availableFrom": "2024-07-12T00:00",
+    "points": 110
+  }
+]

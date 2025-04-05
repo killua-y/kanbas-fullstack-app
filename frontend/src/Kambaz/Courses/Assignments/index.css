@@ -1,0 +1,18 @@
+.wd-assignment-list-item {
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .wd-assignment-link:hover {
+    color: #d41b2c !important;
+    text-decoration: underline !important;
+  }
+  
+  .border-success {
+    border-color: #28a745 !important;
+  }
+  
+  .form-control:focus {
+    box-shadow: none;
+    border-color: #ced4da;
+  }

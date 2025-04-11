@@ -1,12 +1,11 @@
-import Database from "../Database/index.js";
+import model from "./model.js";
 import { v4 as uuidv4 } from "uuid";
 
 /**
  * Find all assignments for a specific course
  */
 export function findAssignmentsForCourse(courseId) {
-  const { assignments } = Database;
-  return assignments.filter((assignment) => assignment.course === courseId);
+  return model.find({ course: courseId });
 }
 
 /**
@@ -14,24 +13,26 @@ export function findAssignmentsForCourse(courseId) {
  */
 export function createAssignment(assignment) {
   const newAssignment = { ...assignment, _id: uuidv4() };
-  Database.assignments = [...Database.assignments, newAssignment];
-  return newAssignment;
-}
+  return model.create(newAssignment);
+};
 
 /**
  * Update an existing assignment by its ID
  */
 export function updateAssignment(assignmentId, updatedFields) {
-  const { assignments } = Database;
-  const assignment = assignments.find(a => a._id === assignmentId);
-  Object.assign(assignment, updatedFields);
-  return assignment;
-}
+  return model.updateOne({ _id: assignmentId }, { $set: updatedFields });
+};
 
 /**
  * Delete an assignment by its ID
  */
 export function deleteAssignment(assignmentId) {
-  const { assignments } = Database;
-  Database.assignments = assignments.filter(a => a._id !== assignmentId); 
-}
+  return model.deleteOne({ _id: assignmentId });
+};
+
+/**
+ * Find an assignment by its ID
+ */
+export function findAssignmentById(assignmentId) {
+  return model.findById(assignmentId);
+};

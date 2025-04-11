@@ -6,12 +6,16 @@ export default function ModuleRoutes(app) {
         res.send(status);
     });
 
-    app.put("/api/modules/:moduleId", (req, res) => {
-        const { moduleId } = req.params;
-        const moduleUpdates = req.body;
-        const status = modulesDao.updateModule(moduleId, moduleUpdates);
-        res.send(status);
+    app.put("/api/modules/:moduleId", async (req, res) => {
+        try {
+            const { moduleId } = req.params;
+            const moduleUpdates = req.body;
+            const status = await modulesDao.updateModule(moduleId, moduleUpdates);
+            res.json(status);
+        } catch (error) {
+            console.error("Error updating module:", error);
+            res.status(500).json({ error: "Failed to update module" });
+        }
     });
-
 }
 

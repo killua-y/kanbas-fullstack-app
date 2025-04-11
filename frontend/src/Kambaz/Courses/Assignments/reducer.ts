@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { v4 as uuidv4 } from "uuid";
 
 // Define Assignment interface
 interface Assignment {
@@ -34,18 +33,8 @@ const assignmentsSlice = createSlice({
 
     // Add new assignment
     addAssignment: (state, { payload: assignment }) => {
-      const newAssignment: Assignment = {
-        _id: uuidv4(),
-        name: assignment.name,
-        course: assignment.course,
-        // Add required properties with default values
-        title: assignment.title || "",
-        description: assignment.description || "",
-        availableFrom: assignment.availableFrom || "",
-        dueDate: assignment.dueDate || "",
-        points: assignment.points || 0,
-      };
-      state.assignments.push(newAssignment);
+      // MongoDB will provide the _id, so we don't need to generate one
+      state.assignments.push(assignment);
     },
 
     // Update an assignment by ID

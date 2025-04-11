@@ -13,6 +13,9 @@ import mongoose from "mongoose";
  * - `isEdited`: Whether the answer has been edited
  * - `editDate`: When the answer was last edited
  * - `editBy`: Who edited the answer
+ * 
+ * Note: There should be only one student answer and one instructor answer per post.
+ * This is enforced at the database level with a compound index.
  */
 const answerSchema = new mongoose.Schema(
   {
@@ -27,5 +30,9 @@ const answerSchema = new mongoose.Schema(
   },
   { collection: 'answers' }
 );
+
+// Add a compound index to ensure uniqueness of post and isInstructorAnswer
+// This will prevent multiple student or instructor answers for the same post
+answerSchema.index({ post: 1, isInstructorAnswer: 1 }, { unique: true });
 
 export default answerSchema; 

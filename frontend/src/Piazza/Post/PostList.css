@@ -1,7 +1,7 @@
 .post-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 10px;
   padding: 1rem;
   overflow-y: auto;
   flex: 1;
@@ -10,31 +10,32 @@
 
 .post-item {
   display: flex;
-  gap: 1rem;
-  padding: 1rem;
-  border-bottom: 1px solid #eee;
+  gap: 15px;
+  padding: 15px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .post-item:hover {
   background-color: #f5f5f5;
 }
 
-.post-item.unread {
-  background-color: #fff3cd;
+.post-item.selected {
+  background-color: #e3f2fd;
+  border-color: #1976d2;
 }
 
-.post-item.unread:hover {
-  background-color: #fff0c0;
+.post-item.unread {
+  border-left: 3px solid #1976d2;
 }
 
 .post-icon {
-  font-size: 1.2rem;
-  width: 24px;
-  height: 24px;
+  font-size: 1.5rem;
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 
 .post-content {
@@ -47,7 +48,8 @@
 .post-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
+  margin-bottom: 5px;
 }
 
 .post-title {
@@ -58,26 +60,22 @@
 .post-date {
   color: #666;
   font-size: 0.9rem;
-  white-space: nowrap;
-  margin-left: 1rem;
 }
 
 .post-meta {
   display: flex;
-  gap: 1rem;
-  font-size: 0.9rem;
+  gap: 15px;
   color: #666;
+  font-size: 0.9rem;
 }
 
 .post-author {
-  color: #3a75a8;
+  font-weight: 500;
 }
 
 .post-responses,
 .post-followups {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
+  color: #1976d2;
 }
 
 .post-responses::before {

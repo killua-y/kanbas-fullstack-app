@@ -1,13 +1,14 @@
-import PostModel from "./Posts/model.js";
-import AnswerModel from "./Answers/model.js";
-import FolderModel from "./Folders/model.js";
-import DiscussionModel from "./Discussions/model.js";
-import ReplyModel from "./Replies/model.js";
+import express from "express";
+import postRoutes from "./Posts/routes.js";
+// import answerRoutes from "./Answers/routes.js";
+// import folderRoutes from "./Folders/routes.js";
 
-export {
-  PostModel,
-  AnswerModel,
-  FolderModel,
-  DiscussionModel,
-  ReplyModel
-}; 
+
+const router = express.Router();
+
+// Mount all routes under /api/piazza
+router.use("/posts", postRoutes);
+// router.use("/answers", answerRoutes);
+// router.use("/folders", folderRoutes);
+
+export default router; 

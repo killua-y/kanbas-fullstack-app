@@ -81,7 +81,7 @@ export default function Piazza() {
     <div className="piazza-container">
       <div className="piazza-header">
         <div className="course-info">
-          <h1>CS 5610-01</h1>
+          <h1>Course {cid}</h1>
           <div className="header-links">
             <a href="#" className="active">Q & A</a>
             <a href="#">Resources</a>

@@ -39,7 +39,7 @@ export default function AssignmentEditor() {
     }
   );
 
-  const handleSave = async () => {
+  const addAssignmentHandler = async () => {
     if (!assignment.title.trim()) {
       alert("Assignment title cannot be empty.");
       return;
@@ -48,25 +48,28 @@ export default function AssignmentEditor() {
     setLoading(true);
     try {
       if (existingAssignment) {
-        // Update existing assignment
-        await assignmentsClient.updateAssignment(assignment._id, assignment);
-        dispatch(updateAssignment(assignment)); // Update in Redux
+        await assignmentsClient.updateAssignment(assignmentId!, assignment);
+        dispatch(updateAssignment(assignment));
       } else {
-        // Create new assignment
-        const createdAssignment = await coursesClient.createAssignmentForCourse(
-          courseId || "",
-          assignment
-        );
-        dispatch(addAssignment(createdAssignment)); // Add to Redux
+        const newAssignment = await coursesClient.createAssignmentForCourse(cid!, {
+          course: cid,
+          title: assignment.title,
+          description: assignment.description,
+          dueDate: assignment.dueDate,
+          availableFrom: assignment.availableFrom,
+          points: assignment.points,
+        });
+        dispatch(addAssignment(newAssignment));
       }
+      // Don't set assignment to an empty string, just navigate away
       navigate(`/Kambaz/Courses/${courseId}/Assignments`);
     } catch (error) {
-      console.error("Error saving assignment:", error);
-      alert("There was an error saving the assignment. Please try again.");
+      console.error("Error creating assignment:", error);
+      alert("There was an error creating the assignment. Please try again.");
     } finally {
       setLoading(false);
     }
-  };
+  }; 
 
   return (
     <div className="container mt-4">
@@ -205,7 +208,7 @@ export default function AssignmentEditor() {
         </Link>
         <button 
           className="btn btn-success" 
-          onClick={handleSave}
+          onClick={addAssignmentHandler}
           disabled={loading}
         >
           {loading ? "Saving..." : "Save"}

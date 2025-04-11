@@ -22,40 +22,27 @@ interface Assignment {
 }
 
 export default function Assignments() {
-  const { cid: courseId } = useParams(); // Get course ID from URL
+  const { cid } = useParams(); // Get course ID from URL
+  const { assignments } = useSelector((state: any) => state.assignmentsReducer);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   
   // Get current user from Redux store
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   
-  // 2) Filter assignments by course, typed as Assignment[]
-  const assignments: Assignment[] = useSelector((state: any) => state.assignmentsReducer.assignments)
-    .filter((assignment: Assignment) => assignment.course === courseId);
-
   // 3) selectedAssignment typed as Assignment | null
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
 
-  // Fetch assignments from the server when component mounts
+  const fetchAssignmentsForCourse = async () => {
+    const data = await coursesClient.findAssignmentsForCourse(cid!);
+    dispatch(setAssignment(data));
+  };
+
   useEffect(() => {
-    const fetchAssignments = async () => {
-      setIsLoading(true);
-      try {
-        if (courseId) {
-          const data = await coursesClient.findAssignmentsForCourse(courseId);
-          dispatch(setAssignment(data));
-        }
-      } catch (error) {
-        console.error("Error fetching assignments:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchAssignments();
-  }, [courseId, dispatch]);
+    fetchAssignmentsForCourse();
+  }, [cid]);
 
   // Show delete confirmation modal
   const handleShowDeleteModal = (assignment: Assignment) => {
@@ -63,22 +50,12 @@ export default function Assignments() {
     setShowDeleteModal(true);
   };
 
-  // Confirm delete action
-  const handleConfirmDelete = async () => {
-    if (selectedAssignment) {
-      try {
-        // Call the API to delete the assignment
-        await assignmentsClient.deleteAssignment(selectedAssignment._id);
-        // Update the Redux store
-        dispatch(deleteAssignment(selectedAssignment._id));
-      } catch (error) {
-        console.error("Error deleting assignment:", error);
-      }
-    }
+  const deleteAssignmentHandler = async (assignmentId: string) => {
+    await assignmentsClient.deleteAssignment(assignmentId);
+    dispatch(deleteAssignment(assignmentId));
     setShowDeleteModal(false);
-    setSelectedAssignment(null);
   };
-
+  
   return (
     <div className="container mt-4">
       {/* Header and Search Bar */}
@@ -98,7 +75,7 @@ export default function Assignments() {
           <div className="d-flex ms-auto">
             <button
               className="btn btn-danger d-flex align-items-center"
-              onClick={() => navigate(`/Kambaz/Courses/${courseId}/Assignments/New`)}
+              onClick={() => navigate(`/Kambaz/Courses/${cid}/Assignments/New`)}
             >
               <FaPlus className="me-2" /> Assignment
             </button>
@@ -118,7 +95,7 @@ export default function Assignments() {
         <ul className="list-group list-group-flush">
           {isLoading ? (
             <li className="list-group-item text-center">Loading assignments...</li>
-          ) : assignments.length > 0 ? (
+          ) : assignments && assignments.length > 0 ? (
             // 4) Map typed assignments
             assignments.map((assignment: Assignment) => (
               <li
@@ -129,7 +106,7 @@ export default function Assignments() {
                   <div className="border-start border-success border-3 me-3"></div>
                   <div>
                     <Link
-                      to={`/Kambaz/Courses/${courseId}/Assignments/${assignment._id}`}
+                      to={`/Kambaz/Courses/${cid}/Assignments/${assignment._id}`}
                       className="fw-bold text-decoration-none text-dark"
                     >
                       {assignment.title}
@@ -179,7 +156,7 @@ export default function Assignments() {
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={handleConfirmDelete}>
+          <Button variant="danger" onClick={() => deleteAssignmentHandler(selectedAssignment!._id)}>
             Delete
           </Button>
         </Modal.Footer>

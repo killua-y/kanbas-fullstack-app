@@ -1,0 +1,166 @@
+.answer-item {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border-left: 3px solid #3a75a8;
+}
+
+.answer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.answer-meta {
+    display: flex;
+    gap: 15px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.answer-author {
+    font-weight: 500;
+    color: #333;
+}
+
+.answer-date {
+    color: #666;
+}
+
+.answer-edited {
+    font-style: italic;
+    color: #666;
+}
+
+.answer-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.answer-actions button {
+    padding: 4px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.answer-actions button:hover {
+    background-color: #e0e0e0;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-toggle {
+    padding: 4px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    min-width: 120px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    padding: 5px 0;
+    z-index: 10;
+    display: none;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 8px 15px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.dropdown-menu button:hover {
+    background-color: #f5f5f5;
+}
+
+.answer-content {
+    color: #333;
+    line-height: 1.5;
+}
+
+.answer-editor {
+    margin-bottom: 15px;
+}
+
+.edit-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: flex-end;
+}
+
+.edit-actions button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.edit-actions button:first-child {
+    background-color: #1976d2;
+    color: white;
+}
+
+.edit-actions button:last-child {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+/* Instructor answer styles */
+.instructor-answer .answer-item {
+    border-left-color: #28a745;
+    background-color: #f2f9f5;
+}
+
+/* Student answer styles */
+.student-answer .answer-item {
+    border-left-color: #3a75a8;
+    background-color: #f8f9fa;
+}
+
+/* Empty state styles */
+.no-answers {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Answer section headers */
+.answers-section-header {
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #333;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #e0e0e0;
+}

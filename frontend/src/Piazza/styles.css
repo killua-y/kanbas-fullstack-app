@@ -1,0 +1,119 @@
+.piazza-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.piazza-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 2rem;
+  background-color: #3a75a8;
+  color: white;
+}
+
+.course-info {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.course-info h1 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.header-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.header-links a {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 0;
+}
+
+.header-links a.active {
+  border-bottom: 2px solid white;
+}
+
+.user-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-name {
+  font-size: 0.9rem;
+}
+
+.piazza-main {
+  flex: 1;
+  padding: 1rem 2rem;
+  min-height: 0; /* Allow container to shrink */
+}
+
+.content-wrapper {
+  display: flex;
+  gap: 1rem;
+  height: 100%;
+  max-width: 1400px; /* Add max-width to control overall content width */
+  margin: 0 auto; /* Center the content */
+}
+
+.post-section {
+  width: 40%; /* Set to 40% for 4:6 ratio */
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  min-width: 0; /* Prevent flex item from overflowing */
+  max-height: 100%; /* Contain the height */
+}
+
+.post-controls {
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0; /* Prevent controls from shrinking */
+}
+
+.new-post {
+  padding: 0.5rem 1rem;
+  background-color: #3a75a8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.post-controls input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  min-width: 0; /* Prevent flex item from overflowing */
+}
+
+.show-actions {
+  padding: 0.5rem 1rem;
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #666;
+  white-space: nowrap;
+}
+
+.side-panel {
+  width: 60%; /* Set to 60% for 4:6 ratio */
+  flex-shrink: 0; /* Prevent panel from shrinking */
+  max-height: 100%; /* Contain the height */
+  overflow-y: auto; /* Enable vertical scrolling */
+} 

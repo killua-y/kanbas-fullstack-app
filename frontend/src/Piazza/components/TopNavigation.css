@@ -1,0 +1,80 @@
+.top-navigation {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  padding: 0.5rem 1rem;
+}
+
+.filter-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.filter-button {
+  background: none;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.filter-button:hover {
+  background-color: #e9ecef;
+}
+
+.filter-dropdown {
+  padding: 0.25rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.categories-row {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.category-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.category-item:hover {
+  background-color: #e9ecef;
+}
+
+.category-item.active {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.category-name {
+  font-size: 0.9rem;
+}
+
+.category-count {
+  background-color: #e9ecef;
+  padding: 0.1rem 0.4rem;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.category-item.active .category-count {
+  background-color: #bbdefb;
+  color: #1976d2;
+} 

@@ -1,35 +1,24 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Row, Col, Card, FormControl } from "react-bootstrap";
 
 export default function Dashboard(
   { courses, course, setCourse, addNewCourse,
-    deleteCourse, updateCourse, allCourses, enroll, unenroll}: {
-    courses: any[]; course: any; setCourse: (course: any) => void;
-    addNewCourse: () => void; deleteCourse: (course: any) => void;
-    updateCourse: () => void; allCourses: any[]; 
-    enroll: (course: any) => void;
-    unenroll: (course: any) => void; })
-  {
+    deleteCourse, updateCourse, enrolling, setEnrolling, updateEnrollment }: {
+      courses: any[]; course: any; setCourse: (course: any) => void;
+      addNewCourse: () => void; deleteCourse: (course: any) => void;
+      updateCourse: () => void;
+      enrolling: boolean;
+      setEnrolling: (enrolling: boolean) => void;
+      updateEnrollment: (courseId: string, enrolled: boolean) => void;
+    }) {
   // Current user from Redux
   const { currentUser } = useSelector((state: any) => state.accountReducer);
-  // Toggle between showing all courses vs. enrolled courses (for students)
-  const [showAllCourses, setShowAllCourses] = useState(false);
 
   // Helper: Check enrollment
   const isEnrolled = (courseId: string) =>
     courses.some((course: any) => course._id === courseId);
 
-  // Student can toggle showing all courses or just enrolled courses
-  const toggleShowAllCourses = () => {
-    setShowAllCourses(!showAllCourses);
-  };
-
-  // Get the correct courses to display based on toggle
-  const displayCourses = showAllCourses && currentUser?.role === "STUDENT" 
-    ? allCourses 
-    : courses;
   return (
     <div id="wd-dashboard">
       <h1 id="wd-dashboard-title">Dashboard</h1>
@@ -71,21 +60,18 @@ export default function Dashboard(
 
       {/* STUDENT: Enrollments Button */}
       {currentUser?.role === "STUDENT" && (
-        <button
-          className="btn btn-primary float-end mb-3"
-          onClick={toggleShowAllCourses}
-        >
-          {showAllCourses ? "Show Enrolled Courses" : "Show All Courses"}
+        <button onClick={() => setEnrolling(!enrolling)} className="float-end btn btn-primary" >
+          {enrolling ? "My Courses" : "All Courses"}
         </button>
       )}
 
       <h2 id="wd-dashboard-published">
-        Published Courses ({displayCourses?.length || 0})
+        Published Courses ({courses?.length || 0})
       </h2>
       <hr />
 
       <Row xs={1} md={5} className="g-4" id="wd-dashboard-courses">
-        {displayCourses
+        {courses
           .map((course) => (
             <Col
               key={course._id}
@@ -124,31 +110,14 @@ export default function Dashboard(
                     </Link>
                   )}
 
-                  {/* STUDENT: Enroll / Unenroll */}
-                  {currentUser?.role === "STUDENT" && (
-                    <>
-                      {isEnrolled(course._id) ? (
-                        <button
-                          className="btn btn-danger"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            unenroll(course._id);
-                          }}
-                        >
-                          Unenroll
-                        </button>
-                      ) : (
-                        <button
-                          className="btn btn-success"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            enroll(course._id);
-                          }}
-                        >
-                          Enroll
-                        </button>
-                      )}
-                    </>
+                  {enrolling && (
+                    <button onClick={(event) => {
+                      event.preventDefault();
+                      updateEnrollment(course._id, !course.enrolled);
+                    }}
+                      className={`btn ${course.enrolled ? "btn-danger" : "btn-success"} float-end`} >
+                      {course.enrolled ? "Unenroll" : "Enroll"}
+                    </button>
                   )}
 
                   {/* FACULTY: Delete / Edit */}

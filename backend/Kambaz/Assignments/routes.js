@@ -1,18 +1,24 @@
-import * as dao from "./dao.js";
+import * as assignmentsDao from "./dao.js";
 
 export default function AssignmentRoutes(app) {
-
-  // 4) Update an assignment by ID
-  app.put("/api/assignments/:assignmentId", (req, res) => {
+  // Delete an assignment by ID
+  app.delete("/api/assignments/:assignmentId", async (req, res) => {
     const { assignmentId } = req.params;
-    const updatedAssignment = dao.updateAssignment(assignmentId, req.body);
+    const deleted = await assignmentsDao.deleteAssignment(assignmentId);
+    res.json(deleted);
+  });
+
+  // Update an assignment by ID
+  app.put("/api/assignments/:assignmentId", async (req, res) => {
+    const { assignmentId } = req.params;
+    const updatedAssignment = await assignmentsDao.updateAssignment(assignmentId, req.body);
     res.json(updatedAssignment);
   });
 
-  // 5) Delete an assignment by ID
-  app.delete("/api/assignments/:assignmentId", (req, res) => {
+  // Find an assignment by ID
+  app.get("/api/assignments/:assignmentId", async (req, res) => {
     const { assignmentId } = req.params;
-    const deleted = dao.deleteAssignment(assignmentId);
-    res.json(deleted);
+    const assignment = await assignmentsDao.findAssignmentById(assignmentId);
+    res.json(assignment);
   });
 }

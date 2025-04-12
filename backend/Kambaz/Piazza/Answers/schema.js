@@ -5,6 +5,7 @@ import mongoose from "mongoose";
  * 
  * This schema defines the structure for storing answers to posts in the database.
  * Each answer includes the following fields:
+ * - `_id`: Custom ID field (string, not ObjectId)
  * - `post`: Reference to the post this answer belongs to
  * - `text`: The content of the answer
  * - `author`: The user who wrote the answer
@@ -19,6 +20,7 @@ import mongoose from "mongoose";
  */
 const answerSchema = new mongoose.Schema(
   {
+    _id: { type: String, required: true }, // Explicitly define _id as String type
     post: { type: String, ref: "PostModel", required: true },
     text: { type: String, required: true },
     author: { type: String, ref: "UserModel", required: true },
@@ -35,4 +37,4 @@ const answerSchema = new mongoose.Schema(
 // This will prevent multiple student or instructor answers for the same post
 answerSchema.index({ post: 1, isInstructorAnswer: 1 }, { unique: true });
 
-export default answerSchema; 
+export default answerSchema;

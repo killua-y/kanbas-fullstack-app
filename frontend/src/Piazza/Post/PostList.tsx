@@ -48,6 +48,7 @@ interface Post {
 export default function PostList({ onSelectPost, selectedPostId }: PostListProps) {
   const { cid } = useParams(); // Get course ID from URL
   const { posts } = useSelector((state: any) => state.postsReducer);
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
   const dispatch = useDispatch();
 
   const fetchPostForCourse = async () => {
@@ -59,9 +60,26 @@ export default function PostList({ onSelectPost, selectedPostId }: PostListProps
     fetchPostForCourse();
   }, [cid]);
 
+  // Filter posts based on visibility settings
+  const filteredPosts = posts.filter((post: Post) => {
+    // If post is visible to the entire course, show it to everyone
+    if (post.postTo === "course") {
+      return true;
+    }
+    
+    // If post is for individual recipients, only show it to those recipients
+    if (post.postTo === "individual") {
+      // Check if current user is in the individualRecipients array
+      return post.individualRecipients.includes(currentUser?._id);
+    }
+    
+    // Default case: don't show the post
+    return false;
+  });
+
   return (
     <div className="post-list">
-      {posts.map((post: Post) => (
+      {filteredPosts.map((post: Post) => (
         <div
           key={post._id}
           className={`post-item ${post.isRead ? 'read' : 'unread'} ${post._id === selectedPostId ? 'selected' : ''}`}
@@ -84,7 +102,7 @@ export default function PostList({ onSelectPost, selectedPostId }: PostListProps
                   {post.viewCount} view{post.viewCount !== 1 ? 's' : ''}
                 </span>
               )}
-              {post.individualRecipients && (
+              {post.individualRecipients && post.postTo === "individual" && (
                 <span className="post-followups">
                   {post.individualRecipients.length} recipient{post.individualRecipients.length !== 1 ? 's' : ''}
                 </span>

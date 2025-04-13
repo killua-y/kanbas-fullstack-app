@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './styles.css';
 import PostList from './Post/PostList';
 import TopNavigation from './components/TopNavigation';
@@ -10,20 +10,44 @@ import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addPost } from './Post/reducer';
 import * as postClient from './Post/client';
+import * as courseClient from '../Kambaz/Courses/client';
 
 export default function Piazza() {
   const { cid } = useParams(); // Get course ID from URL
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedPost, setSelectedPost] = useState<any>(null);
+  const [courseUsers, setCourseUsers] = useState<any[]>([]);
   const dispatch = useDispatch();
 
-  // Mock data for the editor - replace these with actual data in the future
-  const mockUsers = [
-    { id: '1', name: 'Jose Annunziato', role: 'instructor' as const },
-    { id: '2', name: 'Student 1', role: 'student' as const },
-    { id: '3', name: 'Student 2', role: 'student' as const },
-  ];
+  // Fetch users for the course when component mounts
+  useEffect(() => {
+    const fetchCourseUsers = async () => {
+      if (cid) {
+        try {
+          const users = await courseClient.findUsersForCourse(cid);
+          // Sort users to display FACULTY at the top
+          const sortedUsers = users.sort((a: any, b: any) => {
+            if (a.role === 'FACULTY' && b.role !== 'FACULTY') return -1;
+            if (a.role !== 'FACULTY' && b.role === 'FACULTY') return 1;
+            return 0;
+          });
+          setCourseUsers(sortedUsers);
+        } catch (error) {
+          console.error("Error fetching course users:", error);
+        }
+      }
+    };
+    
+    fetchCourseUsers();
+  }, [cid]);
+
+  // Format users for the Editor component
+  const formattedUsers = courseUsers.map(user => ({
+    id: user._id,
+    name: `${user.firstName} ${user.lastName}`,
+    role: user.role
+  }));
 
   const mockFolders = ['hw1', 'hw2', 'hw3', 'hw4', 'hw5', 'hw6', 'project', 'exam', 'logistics', 'other', 'office_hours'];
 
@@ -112,7 +136,7 @@ export default function Piazza() {
               <Editor
                 onCancel={handleCancelPost}
                 onSubmit={handleSubmitPost}
-                users={mockUsers}
+                users={formattedUsers}
                 folders={mockFolders}
               />
             ) : selectedPost ? (

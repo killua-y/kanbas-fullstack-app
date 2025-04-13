@@ -68,7 +68,7 @@ export default function Piazza() {
         postTo: postData.visibility === 'entire-class' ? 'course' : 'individual',
         title: postData.summary,
         text: postData.details,
-        postBy: currentUser?._id || '1', // Use current user ID or fallback to mock ID
+        postBy: currentUser?.username || 'unknown username', // Use current user ID or fallback to mock ID
         course: cid,
         folders: postData.folders,
         individualRecipients: postData.visibility === 'individual' ? postData.visibleTo : [],

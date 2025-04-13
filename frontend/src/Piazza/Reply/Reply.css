@@ -1,0 +1,182 @@
+.reply-item {
+    margin-bottom: 15px;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    position: relative;
+  }
+  
+  .reply-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .reply-meta {
+    display: flex;
+    gap: 15px;
+    color: #666;
+    font-size: 0.85rem;
+    align-items: center;
+  }
+  
+  .reply-author {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .reply-date {
+    color: #666;
+  }
+  
+  .reply-edited {
+    font-style: italic;
+    color: #666;
+  }
+  
+  .reply-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .reply-actions button {
+    padding: 3px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    background-color: #f5f5f5;
+    color: #333;
+  }
+  
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-toggle {
+    padding: 3px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    background-color: #f5f5f5;
+    color: #333;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    min-width: 120px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    padding: 5px 0;
+    z-index: 10;
+    display: none;
+  }
+  
+  .dropdown:hover .dropdown-menu {
+    display: block;
+  }
+  
+  .dropdown-menu button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 8px 15px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+  
+  .dropdown-menu button:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .reply-content {
+    margin-bottom: 10px;
+    line-height: 1.5;
+    color: #333;
+    font-size: 0.95rem;
+  }
+  
+  .reply-footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .reply-button {
+    padding: 3px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    background-color: #e9ecef;
+    color: #333;
+  }
+  
+  .nested-reply-editor {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .reply-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+    justify-content: flex-end;
+  }
+  
+  .submit-button,
+  .cancel-button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.85rem;
+  }
+  
+  .submit-button {
+    background-color: #3a75a8;
+    color: white;
+  }
+  
+  .submit-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .cancel-button {
+    background-color: #e0e0e0;
+    color: #333;
+  }
+  
+  .nested-replies {
+    margin-top: 10px;
+    margin-left: 15px;
+    border-left: 1px solid #e0e0e0;
+    padding-left: 12px;
+  }
+  
+  .reply-editor .ql-container {
+    min-height: 100px;
+  }
+  
+  /* Quill editor styles */
+  .ql-container {
+    min-height: 100px;
+    font-size: 0.95rem;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+  
+  .ql-toolbar {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    background-color: #f5f5f5;
+  }

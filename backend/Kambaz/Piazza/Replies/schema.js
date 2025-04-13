@@ -16,6 +16,7 @@ import mongoose from "mongoose";
  */
 const replySchema = new mongoose.Schema(
   {
+    _id: { type: String, required: true },
     discussion: { type: String, ref: "DiscussionModel", required: true },
     text: { type: String, required: true },
     author: { type: String, ref: "UserModel", required: true },

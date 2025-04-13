@@ -7,8 +7,11 @@ import '../Answer/Answer.css';
 import { updatePost, deletePost } from './reducer';
 import * as postClient from './client';
 import * as answerClient from '../Answer/client';
+import * as discussionClient from '../Discussion/client';
 import { setAnswers, addAnswer, clearAnswers } from '../Answer/reducer';
+import { setDiscussions, addDiscussion, clearDiscussions } from '../Discussion/reducer';
 import Answer from '../Answer/Answer';
+import Discussion from '../Discussion/Discussion';
 
 interface PostViewProps {
   post: any;
@@ -19,34 +22,42 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const { answers } = useSelector((state: any) => state.answersReducer);
+  const { discussions } = useSelector((state: any) => state.discussionsReducer);
   const [studentAnswer, setStudentAnswer] = useState('');
   const [instructorAnswer, setInstructorAnswer] = useState('');
   const [newDiscussion, setNewDiscussion] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [editedPost, setEditedPost] = useState(post);
+  const [showDiscussionEditor, setShowDiscussionEditor] = useState(false);
 
   const isInstructor = currentUser?.role === 'FACULTY';
   const isAuthor = currentUser?._id === post.postBy;
   const canEdit = isInstructor || isAuthor;
 
-  // Fetch answers when post changes
+  // Fetch answers and discussions when post changes
   useEffect(() => {
-    const fetchAnswers = async () => {
+    const fetchData = async () => {
       try {
-        const data = await answerClient.findAnswersForPost(post._id);
-        dispatch(setAnswers(data));
+        // Fetch answers
+        const answersData = await answerClient.findAnswersForPost(post._id);
+        dispatch(setAnswers(answersData));
+
+        // Fetch discussions
+        const discussionsData = await discussionClient.findDiscussionsForPost(post._id);
+        dispatch(setDiscussions(discussionsData));
       } catch (error) {
-        console.error('Error fetching answers:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
     if (post._id) {
-      fetchAnswers();
+      fetchData();
     }
 
-    // Clear answers when component unmounts
+    // Clear answers and discussions when component unmounts
     return () => {
       dispatch(clearAnswers());
+      dispatch(clearDiscussions());
     };
   }, [post._id, dispatch]);
 
@@ -130,6 +141,29 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
     }
   };
 
+  const handleSubmitDiscussion = async () => {
+    if (!newDiscussion.trim()) return;
+    
+    try {
+      const discussion = {
+        post: post._id,
+        text: newDiscussion,
+        author: currentUser?._id || 'unknown',
+        date: new Date(),
+        isResolved: false,
+        isEdited: false,
+        parentDiscussion: null
+      };
+      
+      const newDiscussionData = await discussionClient.createDiscussion(discussion);
+      dispatch(addDiscussion(newDiscussionData));
+      setNewDiscussion('');
+      setShowDiscussionEditor(false);
+    } catch (error) {
+      console.error('Error submitting discussion:', error);
+    }
+  };
+
   // Filter answers by type
   const studentAnswers = answers.filter((answer: any) => !answer.isInstructorAnswer);
   const instructorAnswers = answers.filter((answer: any) => answer.isInstructorAnswer);
@@ -146,7 +180,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
       {/* Post Header */}
       <div className="post-header">
         <div className="post-meta">
-          <span className="post-type">{post.postType === 'question' ? '❓' : '📒'}</span>
+          <span className="post-type">{post.postType === 'question' ? '❓' : '📢'}</span>
           <span className="post-folder">{post.folders.join(', ')}</span>
           <span className="post-views">{post.viewedBy.length} views</span>
           <span className="post-author">Posted by {post.postBy}</span>
@@ -275,19 +309,59 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
       {/* Followup Discussions Section */}
       <div className="discussions-section">
         <h3 className="answers-section-header">Followup Discussions</h3>
-        {/* TODO: Display existing discussions */}
-        <div className="new-discussion">
-          <ReactQuill
-            value={newDiscussion}
-            onChange={setNewDiscussion}
-            placeholder="Start a new followup discussion..."
-            modules={modules}
-            formats={formats}
-          />
-          <button onClick={() => {/* TODO: Handle new discussion */}}>
-            Start Discussion
-          </button>
-        </div>
+        
+        {/* Display existing discussions */}
+        {discussions.length > 0 ? (
+          discussions.map((discussion: any) => (
+            <Discussion 
+              key={discussion._id} 
+              discussion={discussion} 
+              currentUser={currentUser} 
+            />
+          ))
+        ) : (
+          <div className="no-discussions">No followup discussions yet</div>
+        )}
+        
+        {/* New Discussion Editor */}
+        {showDiscussionEditor ? (
+          <div className="new-discussion">
+            <ReactQuill
+              value={newDiscussion}
+              onChange={setNewDiscussion}
+              placeholder="Start a new followup discussion..."
+              modules={modules}
+              formats={formats}
+            />
+            <div className="discussion-actions">
+              <button 
+                className="submit-button"
+                onClick={handleSubmitDiscussion}
+                disabled={!newDiscussion.trim()}
+              >
+                Start Discussion
+              </button>
+              <button 
+                className="cancel-button"
+                onClick={() => {
+                  setNewDiscussion('');
+                  setShowDiscussionEditor(false);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="new-discussion-button">
+            <button 
+              className="start-discussion-button"
+              onClick={() => setShowDiscussionEditor(true)}
+            >
+              Start New Followup Discussion
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

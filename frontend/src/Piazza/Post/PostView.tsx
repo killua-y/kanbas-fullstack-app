@@ -113,7 +113,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
       const answer = {
         post: post._id,
         text: answerText,
-        author: currentUser?._id || '1', // Use current user ID or fallback to mock ID
+        author: currentUser?.username || 'unknown_username',
         isInstructorAnswer: isInstructorAnswer,
         date: new Date(),
         isEdited: false
@@ -148,7 +148,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
       const discussion = {
         post: post._id,
         text: newDiscussion,
-        author: currentUser?._id || 'unknown',
+        author: currentUser?.username || 'unknown_username',
         date: new Date(),
         isResolved: false,
         isEdited: false,

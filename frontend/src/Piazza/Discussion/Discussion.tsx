@@ -116,7 +116,7 @@ const Discussion: React.FC<DiscussionProps> = ({ discussion, currentUser }) => {
       const reply = {
         discussion: discussion._id,
         text: newReply,
-        author: currentUser?._id || 'unknown',
+        author: currentUser?.username || 'unknown_username',
         date: new Date(),
         isEdited: false
       };

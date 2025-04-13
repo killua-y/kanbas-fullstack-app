@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import './ClassGlance.css';
-import * as answerClient from '../Answer/client';
-import { setAnswers } from '../Answer/reducer';
 
 interface ClassStats {
   unreadPosts: number;
@@ -25,30 +23,17 @@ export default function ClassGlance({ courseId }: ClassGlanceProps) {
   const answers = useSelector((state: any) => state.answersReducer.answers);
   const enrollments = useSelector((state: any) => state.enrollmentsReducer.enrollments);
   
-  // Fetch all answers for the course when component mounts
   useEffect(() => {
-    const fetchAllAnswers = async () => {
+    // Only need to fetch answer statistics, not the actual answers
+    const fetchAnswerStats = async () => {
       if (!courseId) return;
       
-      try {
-        // Fetch answers for each post in the course
-        const allAnswers = [];
-        for (const post of posts) {
-          if (post.course === courseId) {
-            const postAnswers = await answerClient.findAnswersForPost(post._id);
-            allAnswers.push(...postAnswers);
-          }
-        }
-        
-        // Update the Redux store with all answers
-        dispatch(setAnswers(allAnswers));
-      } catch (error) {
-        console.error('Error fetching answers:', error);
-      }
+      // Fetch just the counts or metadata needed for statistics
+      // Don't update the main answers Redux store
     };
     
-    fetchAllAnswers();
-  }, [courseId, posts, dispatch]);
+    fetchAnswerStats();
+  }, [courseId, dispatch]);
   
   // Calculate statistics
   const unreadPosts = posts.filter((post: any) => !post.isRead).length;

@@ -91,14 +91,15 @@ export const deletePost = async (postId) => {
 };
 
 /**
- * Increment the view count of a post
+ * Add a user to the viewedBy list of a post if they haven't viewed it before
  * @param {String} postId - The ID of the post
+ * @param {String} userId - The ID of the user viewing the post
  * @returns {Promise<Object>} - The updated post
  */
-export const incrementViewCount = async (postId) => {
+export const addUserToViewedBy = async (postId, userId) => {
   return await PostModel.findByIdAndUpdate(
     postId,
-    { $inc: { viewCount: 1 } },
+    { $addToSet: { viewedBy: userId } },
     { new: true }
   );
 };

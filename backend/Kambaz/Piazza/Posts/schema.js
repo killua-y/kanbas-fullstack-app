@@ -18,7 +18,7 @@ import mongoose from "mongoose";
  * - `course`: Course the post belongs to
  * - `folders`: Folders the post belongs to
  * - `individualRecipients`: Users who can see the post (if postTo is "individual")
- * - `viewCount`: Number of times the post has been viewed
+ * - `viewedBy`: Array of user IDs who have viewed the post
  * - `isResolved`: Whether the post has been resolved
  * - `isPinned`: Whether the post is pinned
  * - `isRead`: Whether the post has been read
@@ -43,7 +43,7 @@ const schema = new mongoose.Schema(
         course: { type: String, ref: "CourseModel", required: true },
         folders: [{ type: String, ref: "FolderModel" }],
         individualRecipients: [{ type: String, ref: "UserModel" }],
-        viewCount: { type: Number, default: 0 },
+        viewedBy: [{ type: String, ref: "UserModel" }],
         isResolved: { type: Boolean, default: false },
         isPinned: { type: Boolean, default: false },
         isRead: { type: Boolean, default: false }

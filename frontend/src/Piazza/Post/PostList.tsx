@@ -23,7 +23,7 @@ interface PostListProps {
  * - `course`: Course the post belongs to
  * - `folders`: Folders the post belongs to
  * - `individualRecipients`: Users who can see the post (if postTo is "individual")
- * - `viewCount`: Number of times the post has been viewed
+ * - `viewedBy`: Array of user IDs who have viewed the post
  * - `isResolved`: Whether the post has been resolved
  * - `isPinned`: Whether the post is pinned
  * - `isRead`: Whether the post has been read
@@ -39,7 +39,7 @@ interface Post {
   course: string;
   folders: string[];
   individualRecipients: string[];
-  viewCount: number;
+  viewedBy: string[];
   isResolved: boolean;
   isPinned: boolean;
   isRead: boolean;
@@ -77,13 +77,41 @@ export default function PostList({ onSelectPost, selectedPostId }: PostListProps
     return false;
   });
 
+  const handlePostClick = async (post: Post) => {
+    if (currentUser && currentUser._id) {
+      try {
+        // Use the viewPost function to add the current user to the viewedBy list
+        const updatedPost = await postClient.viewPost(post._id, currentUser._id);
+        
+        // Mark the post as read
+        const readPost = await postClient.markPostAsRead(post._id);
+        
+        // Update the post in the Redux store with the read status
+        const updatedPosts = posts.map((p: Post) => 
+          p._id === post._id ? { ...readPost, viewedBy: updatedPost.viewedBy } : p
+        );
+        dispatch(setPosts(updatedPosts));
+        
+        // Call the onSelectPost callback with the updated post
+        onSelectPost({ ...readPost, viewedBy: updatedPost.viewedBy });
+      } catch (error) {
+        console.error("Error viewing post:", error);
+        // If there's an error, still select the post
+        onSelectPost(post);
+      }
+    } else {
+      // If no current user, just select the post without updating view count
+      onSelectPost(post);
+    }
+  };
+
   return (
     <div className="post-list">
       {filteredPosts.map((post: Post) => (
         <div
           key={post._id}
           className={`post-item ${post.isRead ? 'read' : 'unread'} ${post._id === selectedPostId ? 'selected' : ''}`}
-          onClick={() => onSelectPost(post)}
+          onClick={() => handlePostClick(post)}
         >
           <div className="post-icon">
             {post.postType === 'note' ? '📢' : '❓'}
@@ -97,9 +125,9 @@ export default function PostList({ onSelectPost, selectedPostId }: PostListProps
             
             <div className="post-meta">
               <span className="post-author">{post.postBy}</span>
-              {post.viewCount && (
+              {post.viewedBy && post.viewedBy.length > 0 && (
                 <span className="post-responses">
-                  {post.viewCount} view{post.viewCount !== 1 ? 's' : ''}
+                  {post.viewedBy.length} view{post.viewedBy.length !== 1 ? 's' : ''}
                 </span>
               )}
               {post.individualRecipients && post.postTo === "individual" && (

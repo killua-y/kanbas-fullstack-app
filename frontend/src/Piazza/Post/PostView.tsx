@@ -113,6 +113,12 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
       // Update state
       dispatch(addAnswer(newAnswer));
       
+      // If this is an instructor answer, mark the post as resolved
+      if (isInstructorAnswer) {
+        const resolvedPost = await postClient.toggleResolvedStatus(post._id);
+        dispatch(updatePost(resolvedPost));
+      }
+      
       // Reset the answer field
       if (isInstructorAnswer) {
         setInstructorAnswer('');

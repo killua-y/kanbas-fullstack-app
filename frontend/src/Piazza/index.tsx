@@ -70,14 +70,15 @@ export default function Piazza() {
         postTo: postData.visibility === 'entire-class' ? 'course' : 'individual',
         title: postData.summary,
         text: postData.details,
-        postBy: currentUser?.username || 'unknown username', // Use current user ID or fallback to mock ID
+        postBy: currentUser?._id || '0', // Use current user ID or fallback to mock ID
         course: cid,
         folders: postData.folders,
         individualRecipients: postData.visibility === 'individual' ? postData.visibleTo : [],
         viewedBy: [],
         isResolved: false,
         isPinned: false,
-        isRead: false
+        isRead: false,
+        date: new Date().toISOString() // Add current date
       };
 
       // Create the post using the client
@@ -86,8 +87,9 @@ export default function Piazza() {
       // Update the Redux store with the new post
       dispatch(addPost(newPost));
       
-      // Close the editor
+      // Close the editor and select the new post
       setIsEditing(false);
+      setSelectedPost(newPost);
     } catch (error) {
       console.error('Error creating post:', error);
       alert('Failed to create post. Please try again.');

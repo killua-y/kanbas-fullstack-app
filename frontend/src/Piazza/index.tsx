@@ -72,7 +72,7 @@ export default function Piazza() {
         course: cid,
         folders: postData.folders,
         individualRecipients: postData.visibility === 'individual' ? postData.visibleTo : [],
-        viewCount: 0,
+        viewedBy: [],
         isResolved: false,
         isPinned: false,
         isRead: false
@@ -145,7 +145,7 @@ export default function Piazza() {
                 onClose={handleClosePostView}
               />
             ) : (
-              <ClassGlance />
+              <ClassGlance courseId={cid} />
             )}
           </div>
         </div>

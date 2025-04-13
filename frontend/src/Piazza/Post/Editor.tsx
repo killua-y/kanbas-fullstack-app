@@ -6,7 +6,7 @@ import './Editor.css';
 interface User {
     id: string;
     name: string;
-    role: 'instructor' | 'student';
+    role: string;
 }
 
 interface EditorProps {

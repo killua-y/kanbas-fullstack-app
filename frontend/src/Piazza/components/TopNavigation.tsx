@@ -1,4 +1,3 @@
-import React from 'react';
 import './TopNavigation.css';
 
 interface Category {

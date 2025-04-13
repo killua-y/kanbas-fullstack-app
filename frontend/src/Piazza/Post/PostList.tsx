@@ -9,6 +9,7 @@ import * as postClient from './client';
 interface PostListProps {
   onSelectPost: (post: any) => void;
   selectedPostId?: string;
+  searchQuery?: string;
 }
 
 /**
@@ -45,7 +46,7 @@ interface Post {
   isRead: boolean;
 }
 
-export default function PostList({ onSelectPost, selectedPostId }: PostListProps) {
+export default function PostList({ onSelectPost, selectedPostId, searchQuery = '' }: PostListProps) {
   const { cid } = useParams(); // Get course ID from URL
   const { posts } = useSelector((state: any) => state.postsReducer);
   const { currentUser } = useSelector((state: any) => state.accountReducer);
@@ -60,21 +61,32 @@ export default function PostList({ onSelectPost, selectedPostId }: PostListProps
     fetchPostForCourse();
   }, [cid]);
 
-  // Filter posts based on visibility settings
+  // Filter posts based on visibility settings and search query
   const filteredPosts = posts.filter((post: Post) => {
-    // If post is visible to the entire course, show it to everyone
+    // First check visibility settings
+    let isVisible = false;
     if (post.postTo === "course") {
+      isVisible = true;
+    } else if (post.postTo === "individual") {
+      isVisible = post.individualRecipients.includes(currentUser?._id);
+    }
+
+    // If not visible, return false
+    if (!isVisible) {
+      return false;
+    }
+
+    // If there's no search query, show all visible posts
+    if (!searchQuery.trim()) {
       return true;
     }
-    
-    // If post is for individual recipients, only show it to those recipients
-    if (post.postTo === "individual") {
-      // Check if current user is in the individualRecipients array
-      return post.individualRecipients.includes(currentUser?._id);
-    }
-    
-    // Default case: don't show the post
-    return false;
+
+    // Search in title and text
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      post.title.toLowerCase().includes(searchLower) ||
+      post.text.toLowerCase().includes(searchLower)
+    );
   });
 
   const handlePostClick = async (post: Post) => {

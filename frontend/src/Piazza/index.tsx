@@ -18,6 +18,7 @@ export default function Piazza() {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedPost, setSelectedPost] = useState<any>(null);
   const [courseUsers, setCourseUsers] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const dispatch = useDispatch();
 
   // Fetch users for the course when component mounts
@@ -101,6 +102,17 @@ export default function Piazza() {
     setSelectedPost(null);
   };
 
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleSearchKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      // The search is already live, no need for additional action
+      event.preventDefault();
+    }
+  };
+
   return (
     <div className="piazza-container">
       <div className="piazza-header">
@@ -125,10 +137,20 @@ export default function Piazza() {
           <div className="post-section">
             <div className="post-controls">
               <button className="new-post" onClick={handleNewPost}>New Post</button>
-              <input type="search" placeholder="Search or add a post..." />
+              <input 
+                type="search" 
+                placeholder="Search or add a post..." 
+                value={searchQuery}
+                onChange={handleSearch}
+                onKeyPress={handleSearchKeyPress}
+              />
               <button className="show-actions">Show Actions</button>
             </div>
-            <PostList onSelectPost={handleSelectPost} selectedPostId={selectedPost?._id} />
+            <PostList 
+              onSelectPost={handleSelectPost} 
+              selectedPostId={selectedPost?._id}
+              searchQuery={searchQuery}
+            />
           </div>
           
           <div className="side-panel">

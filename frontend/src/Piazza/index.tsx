@@ -19,6 +19,7 @@ export default function Piazza() {
   const [selectedPost, setSelectedPost] = useState<any>(null);
   const [courseUsers, setCourseUsers] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const dispatch = useDispatch();
 
   // Fetch users for the course when component mounts
@@ -113,6 +114,10 @@ export default function Piazza() {
     }
   };
 
+  const handleToggleSidebar = () => {
+    setIsSidebarVisible(!isSidebarVisible);
+  };
+
   return (
     <div className="piazza-container">
       <div className="piazza-header">
@@ -130,11 +135,14 @@ export default function Piazza() {
         </div>
       </div>
       
-      <TopNavigation />
+      <TopNavigation 
+        isSidebarVisible={isSidebarVisible}
+        onToggleSidebar={handleToggleSidebar}
+      />
       
       <div className="piazza-main">
         <div className="content-wrapper">
-          <div className="post-section">
+          <div className={`post-section ${!isSidebarVisible ? 'hidden' : ''}`}>
             <div className="post-controls">
               <button className="new-post" onClick={handleNewPost}>New Post</button>
               <input 
@@ -153,7 +161,7 @@ export default function Piazza() {
             />
           </div>
           
-          <div className="side-panel">
+          <div className={`side-panel ${!isSidebarVisible ? 'expanded' : ''}`}>
             {isEditing ? (
               <Editor
                 onCancel={handleCancelPost}

@@ -8,7 +8,12 @@ interface Category {
   isActive?: boolean;
 }
 
-export default function TopNavigation() {
+interface TopNavigationProps {
+  isSidebarVisible: boolean;
+  onToggleSidebar: () => void;
+}
+
+export default function TopNavigation({ isSidebarVisible, onToggleSidebar }: TopNavigationProps) {
   const categories: Category[] = [
     { id: 'live', name: 'LIVE Q&A', count: 0 },
     { id: 'drafts', name: 'Drafts', count: 0 },
@@ -30,6 +35,9 @@ export default function TopNavigation() {
   return (
     <div className="top-navigation">
       <div className="filter-row">
+        <button className="toggle-sidebar" onClick={onToggleSidebar}>
+          {isSidebarVisible ? '◀' : '▶'}
+        </button>
         {filters.map(filter => (
           <button key={filter} className="filter-button">
             {filter}

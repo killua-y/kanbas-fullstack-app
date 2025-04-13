@@ -148,7 +148,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
         <div className="post-meta">
           <span className="post-type">{post.postType === 'question' ? '❓' : '📒'}</span>
           <span className="post-folder">{post.folders.join(', ')}</span>
-          <span className="post-views">{post.viewCount} views</span>
+          <span className="post-views">{post.viewedBy.length} views</span>
           <span className="post-author">Posted by {post.postBy}</span>
         </div>
         {canEdit && (

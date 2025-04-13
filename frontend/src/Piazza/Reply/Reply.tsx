@@ -54,7 +54,7 @@ const Reply: React.FC<ReplyProps> = ({ reply, currentUser }) => {
         text: editedText,
         isEdited: true,
         editDate: new Date(),
-        editBy: currentUser?._id
+        editBy: currentUser?.username
       });
       dispatch(updateReply(updatedReply));
       setIsEditing(false);
@@ -81,7 +81,7 @@ const Reply: React.FC<ReplyProps> = ({ reply, currentUser }) => {
       const nestedReply = {
         discussion: reply.discussion,
         text: newNestedReply,
-        author: currentUser?._id || 'unknown',
+        author: currentUser?.username || 'unknown_username',
         date: new Date(),
         isEdited: false,
         parentReply: reply._id

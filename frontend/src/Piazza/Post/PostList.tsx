@@ -138,13 +138,25 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
   useEffect(() => {
     const filteredPosts = getFilteredPosts();
     const groups: PostGroup[] = [];
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    
+    // Get date boundaries
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    
+    // Calculate last week's boundaries (Sunday to Saturday)
+    const lastWeekEnd = new Date(today);
+    lastWeekEnd.setDate(today.getDate() - today.getDay() - 1); // Last Saturday
+    const lastWeekStart = new Date(lastWeekEnd);
+    lastWeekStart.setDate(lastWeekEnd.getDate() - 6); // Last Sunday
 
     // Helper to get week range string
     const getWeekRange = (date: Date) => {
+      // Get Sunday of the week
       const startOfWeek = new Date(date);
       startOfWeek.setDate(date.getDate() - date.getDay());
+      // Get Saturday of the week
       const endOfWeek = new Date(startOfWeek);
       endOfWeek.setDate(startOfWeek.getDate() + 6);
       return `WEEK ${startOfWeek.getMonth() + 1}/${startOfWeek.getDate()} - ${endOfWeek.getMonth() + 1}/${endOfWeek.getDate()}`;
@@ -153,7 +165,7 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
     // Group for TODAY
     const todayPosts = filteredPosts.filter((post: Post) => {
       const postDate = new Date(post.date);
-      return postDate.toDateString() === today.toDateString();
+      return postDate >= today;
     });
     if (todayPosts.length > 0) {
       const title = 'TODAY';
@@ -164,12 +176,24 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
       });
     }
 
-    // Group for LAST WEEK
-    const lastWeek = new Date(today);
-    lastWeek.setDate(today.getDate() - 7);
+    // Group for YESTERDAY
+    const yesterdayPosts = filteredPosts.filter((post: Post) => {
+      const postDate = new Date(post.date);
+      return postDate >= yesterday && postDate < today;
+    });
+    if (yesterdayPosts.length > 0) {
+      const title = 'YESTERDAY';
+      groups.push({ 
+        title, 
+        posts: yesterdayPosts, 
+        isCollapsed: collapsedState[title] ?? true
+      });
+    }
+
+    // Group for LAST WEEK (Sunday to Saturday, not including today/yesterday)
     const lastWeekPosts = filteredPosts.filter((post: Post) => {
       const postDate = new Date(post.date);
-      return postDate >= lastWeek && postDate < today;
+      return postDate >= lastWeekStart && postDate <= lastWeekEnd;
     });
     if (lastWeekPosts.length > 0) {
       const title = 'LAST WEEK';
@@ -180,17 +204,20 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
       });
     }
 
-    // Group remaining posts by weeks
+    // Group remaining posts by weeks (older than last week)
     const olderPosts = filteredPosts.filter((post: Post) => {
       const postDate = new Date(post.date);
-      return postDate < lastWeek;
+      return postDate < lastWeekStart;
     });
 
     // Group by weeks
     const weekGroups: Record<string, Post[]> = {};
     olderPosts.forEach((post: Post) => {
       const postDate = new Date(post.date);
-      const weekKey = getWeekRange(postDate);
+      // Adjust date to the start of its week (Sunday)
+      const weekStart = new Date(postDate);
+      weekStart.setDate(postDate.getDate() - postDate.getDay());
+      const weekKey = getWeekRange(weekStart);
       if (!weekGroups[weekKey]) {
         weekGroups[weekKey] = [];
       }

@@ -14,7 +14,7 @@ import { createSlice } from "@reduxjs/toolkit";
  * - `course`: Course the post belongs to
  * - `folders`: Folders the post belongs to
  * - `individualRecipients`: Users who can see the post (if postTo is "individual")
- * - `viewCount`: Number of times the post has been viewed
+ * - `viewedBy`: Array of user IDs who have viewed the post
  * - `isResolved`: Whether the post has been resolved
  * - `isPinned`: Whether the post is pinned
  * - `isRead`: Whether the post has been read
@@ -30,7 +30,7 @@ interface Post {
     course: string;
     folders: string[];
     individualRecipients: string[];
-    viewCount: number;
+    viewedBy: string[];
     isResolved: boolean;
     isPinned: boolean;
     isRead: boolean;

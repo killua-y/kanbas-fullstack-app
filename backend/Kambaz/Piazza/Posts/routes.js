@@ -8,7 +8,7 @@ import {
   findPostsVisibleToUser,
   updatePost,
   deletePost,
-  incrementViewCount,
+  addUserToViewedBy,
   markPostAsRead,
   toggleResolvedStatus,
   togglePinnedStatus
@@ -53,17 +53,25 @@ router.get("/course/:courseId", async (req, res) => {
 });
 
 /**
- * Get a post by ID
- * GET /api/piazza/posts/:postId
+ * Get a post by ID and record the view
+ * GET /api/piazza/posts/:postId?userId=:userId
  */
 router.get("/:postId", async (req, res) => {
   try {
-    const post = await findPostById(req.params.postId);
+    const { postId } = req.params;
+    const { userId } = req.query;
+    
+    if (!userId) {
+      return res.status(400).json({ message: "userId query parameter is required" });
+    }
+    
+    const post = await findPostById(postId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-    // Increment view count
-    await incrementViewCount(req.params.postId);
+    
+    // Add user to viewedBy list
+    await addUserToViewedBy(postId, userId);
     res.json(post);
   } catch (error) {
     res.status(500).json({ message: error.message });

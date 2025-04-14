@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './styles.css';
 import PostList from './Post/PostList';
 import TopNavigation from './components/TopNavigation';
@@ -10,20 +10,46 @@ import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addPost } from './Post/reducer';
 import * as postClient from './Post/client';
+import * as courseClient from '../Kambaz/Courses/client';
 
 export default function Piazza() {
   const { cid } = useParams(); // Get course ID from URL
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedPost, setSelectedPost] = useState<any>(null);
+  const [courseUsers, setCourseUsers] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const dispatch = useDispatch();
 
-  // Mock data for the editor - replace these with actual data in the future
-  const mockUsers = [
-    { id: '1', name: 'Jose Annunziato', role: 'instructor' as const },
-    { id: '2', name: 'Student 1', role: 'student' as const },
-    { id: '3', name: 'Student 2', role: 'student' as const },
-  ];
+  // Fetch users for the course when component mounts
+  useEffect(() => {
+    const fetchCourseUsers = async () => {
+      if (cid) {
+        try {
+          const users = await courseClient.findUsersForCourse(cid);
+          // Sort users to display FACULTY at the top
+          const sortedUsers = users.sort((a: any, b: any) => {
+            if (a.role === 'FACULTY' && b.role !== 'FACULTY') return -1;
+            if (a.role !== 'FACULTY' && b.role === 'FACULTY') return 1;
+            return 0;
+          });
+          setCourseUsers(sortedUsers);
+        } catch (error) {
+          console.error("Error fetching course users:", error);
+        }
+      }
+    };
+    
+    fetchCourseUsers();
+  }, [cid]);
+
+  // Format users for the Editor component
+  const formattedUsers = courseUsers.map(user => ({
+    id: user._id,
+    name: `${user.firstName} ${user.lastName}`,
+    role: user.role
+  }));
 
   const mockFolders = ['hw1', 'hw2', 'hw3', 'hw4', 'hw5', 'hw6', 'project', 'exam', 'logistics', 'other', 'office_hours'];
 
@@ -44,14 +70,15 @@ export default function Piazza() {
         postTo: postData.visibility === 'entire-class' ? 'course' : 'individual',
         title: postData.summary,
         text: postData.details,
-        postBy: currentUser?._id || '1', // Use current user ID or fallback to mock ID
+        postBy: currentUser?._id || '0', // Use current user ID or fallback to mock ID
         course: cid,
         folders: postData.folders,
         individualRecipients: postData.visibility === 'individual' ? postData.visibleTo : [],
-        viewCount: 0,
+        viewedBy: [],
         isResolved: false,
         isPinned: false,
-        isRead: false
+        isRead: false,
+        date: new Date().toISOString() // Add current date
       };
 
       // Create the post using the client
@@ -60,8 +87,9 @@ export default function Piazza() {
       // Update the Redux store with the new post
       dispatch(addPost(newPost));
       
-      // Close the editor
+      // Close the editor and select the new post
       setIsEditing(false);
+      setSelectedPost(newPost);
     } catch (error) {
       console.error('Error creating post:', error);
       alert('Failed to create post. Please try again.');
@@ -75,6 +103,21 @@ export default function Piazza() {
 
   const handleClosePostView = () => {
     setSelectedPost(null);
+  };
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleSearchKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      // The search is already live, no need for additional action
+      event.preventDefault();
+    }
+  };
+
+  const handleToggleSidebar = () => {
+    setIsSidebarVisible(!isSidebarVisible);
   };
 
   return (
@@ -94,25 +137,38 @@ export default function Piazza() {
         </div>
       </div>
       
-      <TopNavigation />
+      <TopNavigation 
+        isSidebarVisible={isSidebarVisible}
+        onToggleSidebar={handleToggleSidebar}
+      />
       
       <div className="piazza-main">
         <div className="content-wrapper">
-          <div className="post-section">
+          <div className={`post-section ${!isSidebarVisible ? 'hidden' : ''}`}>
             <div className="post-controls">
               <button className="new-post" onClick={handleNewPost}>New Post</button>
-              <input type="search" placeholder="Search or add a post..." />
+              <input 
+                type="search" 
+                placeholder="Search or add a post..." 
+                value={searchQuery}
+                onChange={handleSearch}
+                onKeyPress={handleSearchKeyPress}
+              />
               <button className="show-actions">Show Actions</button>
             </div>
-            <PostList onSelectPost={handleSelectPost} selectedPostId={selectedPost?._id} />
+            <PostList 
+              onSelectPost={handleSelectPost} 
+              selectedPostId={selectedPost?._id}
+              searchQuery={searchQuery}
+            />
           </div>
           
-          <div className="side-panel">
+          <div className={`side-panel ${!isSidebarVisible ? 'expanded' : ''}`}>
             {isEditing ? (
               <Editor
                 onCancel={handleCancelPost}
                 onSubmit={handleSubmitPost}
-                users={mockUsers}
+                users={formattedUsers}
                 folders={mockFolders}
               />
             ) : selectedPost ? (
@@ -121,7 +177,7 @@ export default function Piazza() {
                 onClose={handleClosePostView}
               />
             ) : (
-              <ClassGlance />
+              <ClassGlance courseId={cid} />
             )}
           </div>
         </div>

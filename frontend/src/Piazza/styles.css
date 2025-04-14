@@ -17,7 +17,7 @@
 .course-info {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 .course-info h1 {
@@ -27,13 +27,13 @@
 
 .header-links {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .header-links a {
   color: white;
   text-decoration: none;
-  padding: 0.5rem 0;
+  padding: 0.25rem 0;
 }
 
 .header-links a.active {
@@ -43,7 +43,7 @@
 .user-controls {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .user-name {
@@ -52,39 +52,68 @@
 
 .piazza-main {
   flex: 1;
-  padding: 1rem 2rem;
+  padding: 0.5rem 1rem;
   min-height: 0; /* Allow container to shrink */
 }
 
 .content-wrapper {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   height: 100%;
-  max-width: 1400px; /* Add max-width to control overall content width */
-  margin: 0 auto; /* Center the content */
+  max-width: 1600px; /* Increased max-width */
+  margin: 0 auto;
+  position: relative;
 }
 
 .post-section {
-  width: 40%; /* Set to 40% for 4:6 ratio */
+  width: 35%; /* Reduced width for better space utilization */
   display: flex;
   flex-direction: column;
   background: white;
-  border-radius: 8px;
+  border-radius: 4px; /* Reduced border radius */
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  min-width: 0; /* Prevent flex item from overflowing */
-  max-height: 100%; /* Contain the height */
+  min-width: 0;
+  max-height: 100%;
+  transition: transform 0.3s ease, width 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.post-section.hidden {
+  width: 0;
+  transform: translateX(-100%);
+  overflow: hidden;
 }
 
 .post-controls {
-  padding: 1rem;
+  padding: 0.5rem;
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   border-bottom: 1px solid #eee;
-  flex-shrink: 0; /* Prevent controls from shrinking */
+  flex-shrink: 0;
+}
+
+.toggle-sidebar {
+  padding: 0.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+.toggle-sidebar:hover {
+  background-color: #f0f0f0;
 }
 
 .new-post {
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.75rem;
   background-color: #3a75a8;
   color: white;
   border: none;
@@ -95,14 +124,14 @@
 
 .post-controls input {
   flex: 1;
-  padding: 0.5rem;
+  padding: 0.25rem 0.5rem;
   border: 1px solid #ddd;
   border-radius: 4px;
-  min-width: 0; /* Prevent flex item from overflowing */
+  min-width: 0;
 }
 
 .show-actions {
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.75rem;
   background: none;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -112,8 +141,13 @@
 }
 
 .side-panel {
-  width: 60%; /* Set to 60% for 4:6 ratio */
-  flex-shrink: 0; /* Prevent panel from shrinking */
-  max-height: 100%; /* Contain the height */
-  overflow-y: auto; /* Enable vertical scrolling */
+  flex: 1;
+  min-width: 65%; /* Increased min-width to match post-section change */
+  flex-shrink: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  transition: width 0.3s ease;
+  background: white;
+  border-radius: 4px; /* Reduced border radius */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 } 

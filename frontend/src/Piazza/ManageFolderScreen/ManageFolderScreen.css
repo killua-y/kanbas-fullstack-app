@@ -1,0 +1,55 @@
+.mfs-container {
+    max-width: 1600px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+.add-folder {
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.add-folder input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button {
+    padding: 0.5rem 1rem;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+.folder-list {
+    list-style: none;
+    padding: 0;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+
+.folder-list li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.folder-list li:last-child {
+    border-bottom: none;
+}
+
+.folder-list input {
+    padding: 0.3rem;
+    flex: 1;
+}

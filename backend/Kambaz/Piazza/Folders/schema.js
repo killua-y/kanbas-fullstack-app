@@ -12,10 +12,12 @@ import mongoose from "mongoose";
  */
 const folderSchema = new mongoose.Schema(
   {
+    _id: { type: String, required: true },
     name: { type: String, required: true },
+    author: { type: String, ref: "UserModel", required: true },
+    // post: { type: String, ref: "PostModel", required: true },
     course: { type: String, ref: "CourseModel", required: true },
-    order: { type: Number, default: 0 },
-    isDefault: { type: Boolean, default: false }
+    editBy: { type: String, ref: "UserModel" },
   },
   { collection: 'folders' },
 );

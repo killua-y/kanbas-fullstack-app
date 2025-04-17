@@ -28,11 +28,7 @@ export default function Piazza() {
   const [courseUsers, setCourseUsers] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
-  const [isLoadingPostDetail, setIsLoadingPostDetail] = useState(false);
-  const [postDetailError, setPostDetailError] = useState<string | null>(null);
-
   const [courseFolders, setCourseFolders] = useState<FolderOption[]>([]);
-  const [foldersError, setFoldersError] = useState<string | null>(null);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
 
   const dispatch = useDispatch();
@@ -81,7 +77,7 @@ export default function Piazza() {
         }
 
         // Fetch Folders
-        setFoldersError(null); // Reset error on new fetch
+        // setFoldersError(null); // Reset error on new fetch
         try {
           const folders = await folderClient.findFoldersByCourse(cid);
           if (isMounted) {
@@ -91,7 +87,7 @@ export default function Piazza() {
         } catch (error: any) {
           console.error("Error fetching course folders:", error);
           if (isMounted) {
-            setFoldersError(error.response?.data?.message || "Failed to load folders.");
+            console.log(error.response?.data?.message || "Failed to load folders.");
             setCourseFolders([]); // Clear folders on error
           }
         }
@@ -197,12 +193,8 @@ export default function Piazza() {
 
   const handleSelectFolder = (folderId: string | null) => {
     setSelectedFolderId(folderId);
-    // Optional: Close post view when changing folders?
-    // setSelectedPost(null);
-    // setPostDetailError(null);
   };
 
-  console.log(selectedPost)
   return (
     <div className="piazza-container">
       <div className="piazza-header">
@@ -256,12 +248,11 @@ export default function Piazza() {
                     selectedPostId={selectedPost?._id}
                     searchQuery={searchQuery}
                     selectedFolderId={selectedFolderId} // Pass selected folder ID
-                    courseId={cid}
                   />
                 </div>
 
                 <div className={`side-panel ${!isSidebarVisible ? 'expanded' : ''}`}>
-                  {/* {isEditing ? (
+                  {isEditing ? (
                     <Editor
                       onCancel={handleCancelPost}
                       onSubmit={handleSubmitPost}
@@ -275,25 +266,6 @@ export default function Piazza() {
                     />
                   ) : (
                     <ClassGlance courseId={cid} />
-                  )} */}
-                  {isLoadingPostDetail ? (
-                    <div>Loading post...</div>
-                  ) : postDetailError ? (
-                    <div style={{ color: 'red' }}>Error: {postDetailError}</div>
-                  ) : isEditing ? (
-                    <Editor
-                      onCancel={handleCancelPost}
-                      onSubmit={handleSubmitPost}
-                      users={formattedUsers}
-                      folders={courseFolders.map(folder => folder.name)}
-                    />
-                  ) : selectedPost ? (
-                    <PostView // Now receives freshly fetched post
-                      post={selectedPost}
-                      onClose={handleClosePostView}
-                    />
-                  ) : (
-                    !isLoadingPostDetail && !postDetailError && <ClassGlance courseId={cid} />
                   )}
                 </div>
 

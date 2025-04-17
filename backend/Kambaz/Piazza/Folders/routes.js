@@ -1,4 +1,3 @@
-
 import express from "express";
 import {
   createFolder,
@@ -113,8 +112,6 @@ router.get("/:folderId", async (req, res) => {
  */
 router.put("/:folderId", async (req, res) => {
   try {
-    // Consider adding validation for req.body
-    // You might want to prevent updating certain fields like author, post, course easily
     const folder = await updateFolder(req.params.folderId, req.body);
     if (!folder) {
       return res.status(404).json({ message: "Folder not found for update" });
@@ -136,7 +133,6 @@ router.delete("/:folderId", async (req, res) => {
     if (!folder) {
       return res.status(404).json({ message: "Folder not found for deletion" });
     }
-    // You can send back confirmation, or the deleted object, or just 204 No Content
     res.json({ message: "Folder deleted successfully", deletedFolderId: folder._id });
   } catch (error) {
     console.error(`Error deleting folder ${req.params.folderId}:`, error);

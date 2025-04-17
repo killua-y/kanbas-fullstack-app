@@ -17,17 +17,13 @@
     border-radius: 4px;
 }
 
-button {
+.folder-button {
     padding: 0.5rem 1rem;
-    background: #007bff;
+    background: #3a75a8;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-}
-
-button:hover {
-    background: #0056b3;
 }
 
 .folder-list {

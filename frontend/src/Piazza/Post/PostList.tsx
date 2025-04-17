@@ -12,7 +12,7 @@ interface PostListProps {
   selectedPostId?: string;
   searchQuery?: string;
   selectedFolderId: string | null; // <-- ADD prop
-  courseId: string | undefined;
+  // courseId: string | undefined;
 }
 
 /**
@@ -61,8 +61,7 @@ interface PostGroup {
   isCollapsed: boolean;
 }
 
-export default function PostList({ onSelectPost, selectedPostId, searchQuery = '', selectedFolderId, // <-- Receive prop
-  courseId }: PostListProps) {
+export default function PostList({ onSelectPost, selectedPostId, searchQuery = '', selectedFolderId }: PostListProps) {
   const { cid } = useParams();
   const { posts } = useSelector((state: any) => state.postsReducer);
   const { currentUser } = useSelector((state: any) => state.accountReducer);
@@ -70,8 +69,6 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
   const [postGroups, setPostGroups] = useState<PostGroup[]>([]);
   const [userMap, setUserMap] = useState<Record<string, User>>({});
   const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({});
-  const [isLoading, setIsLoading] = useState(false); // Add loading state
-  const [error, setError] = useState<string | null>(null); // Add error state
 
   // const fetchPostForCourse = async () => {
   //   const data = await postClient.findPostsForCourse(cid!);
@@ -84,14 +81,12 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
   useEffect(() => {
     const fetchPostsBasedOnFilter = async () => {
       // Only fetch if courseId is provided
-      if (!courseId) {
+      if (!cid) {
         dispatch(setPosts([])); // Clear posts if no course ID
         return;
       }
 
-      setIsLoading(true);
-      setError(null);
-      console.log(`Fetching posts for course ${courseId}, folder ${selectedFolderId || 'All'}`); // Debug log
+      console.log(`Fetching posts for course ${cid}, folder ${selectedFolderId || 'All'}`); // Debug log
 
       try {
         let fetchedPosts;
@@ -100,22 +95,20 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
           fetchedPosts = await postClient.findPostsForFolder(selectedFolderId);
         } else {
           // Fetch all posts for the course
-          fetchedPosts = await postClient.findPostsForCourse(courseId);
+          fetchedPosts = await postClient.findPostsForCourse(cid);
         }
         // Update the Redux store with the fetched posts
         dispatch(setPosts(fetchedPosts));
       } catch (err: any) {
         console.error("Error fetching posts:", err);
-        setError(err.response?.data?.message || "Failed to load posts.");
+        // setError(err.response?.data?.message || "Failed to load posts.");
         dispatch(setPosts([])); // Clear posts on error
-      } finally {
-        setIsLoading(false);
       }
     };
 
     fetchPostsBasedOnFilter();
     // Dependency array includes courseId and selectedFolderId
-  }, [courseId, selectedFolderId, dispatch]);
+  }, [cid, selectedFolderId, dispatch]);
 
   // Fetch user data for all posts
   useEffect(() => {
@@ -306,7 +299,7 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
       try {
         const updatedPost = await postClient.viewPost(post._id, currentUser._id);
         const readPost = await postClient.markPostAsRead(post._id);
-        const updatedPosts = posts.map((p: Post) => 
+        const updatedPosts = posts.map((p: Post) =>
           p._id === post._id ? { ...readPost, viewedBy: updatedPost.viewedBy } : p
         );
         dispatch(setPosts(updatedPosts));

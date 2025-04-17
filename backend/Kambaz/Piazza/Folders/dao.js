@@ -1,15 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import FolderModel from "./model.js";
 
-// --- Model Compilation ---
-// NOTE: Mongoose models are typically compiled once.
-// You might do this in a central models/index.js file or here.
-// If the model is compiled elsewhere, import the compiled model directly.
-// Example: import FolderModel from './folderModel.js';
-// For this example, let's compile it here:
-// const FolderModel = mongoose.models.Folder || mongoose.model("Folder", folderSchema);
-// `mongoose.models.Folder` checks if it's already compiled
-
 /**
  * Data Access Object for Folder operations
  * Handles all database interactions for folders
@@ -96,5 +87,3 @@ export const updateFolder = async (folderId, updates) => {
 export const deleteFolder = async (folderId) => {
   return await FolderModel.findByIdAndDelete(folderId);
 };
-
-// You could add more specific find functions if needed, e.g., findFolderByNameAndCourse, etc.

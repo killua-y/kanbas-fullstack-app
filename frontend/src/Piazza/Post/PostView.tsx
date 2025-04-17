@@ -66,7 +66,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
     toolbar: [
       [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
       ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
       [{ 'color': [] }, { 'background': [] }],
       ['link', 'image'],
       ['clean']
@@ -107,7 +107,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
   const handleSubmitAnswer = async (isInstructorAnswer: boolean) => {
     const answerText = isInstructorAnswer ? instructorAnswer : studentAnswer;
     if (!answerText.trim()) return;
-  
+
     try {
       // Create the answer object without an _id - let the server generate it
       const answer = {
@@ -118,18 +118,18 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
         date: new Date(),
         isEdited: false
       };
-  
+
       const newAnswer = await answerClient.createAnswer(answer);
-      
+
       // Update state
       dispatch(addAnswer(newAnswer));
-      
+
       // If this is an instructor answer, mark the post as resolved
       if (isInstructorAnswer) {
         const resolvedPost = await postClient.toggleResolvedStatus(post._id);
         dispatch(updatePost(resolvedPost));
       }
-      
+
       // Reset the answer field
       if (isInstructorAnswer) {
         setInstructorAnswer('');
@@ -143,7 +143,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
 
   const handleSubmitDiscussion = async () => {
     if (!newDiscussion.trim()) return;
-    
+
     try {
       const discussion = {
         post: post._id,
@@ -154,7 +154,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
         isEdited: false,
         parentDiscussion: null
       };
-      
+
       const newDiscussionData = await discussionClient.createDiscussion(discussion);
       dispatch(addDiscussion(newDiscussionData));
       setNewDiscussion('');
@@ -181,7 +181,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
       <div className="post-header">
         <div className="post-meta">
           <span className="post-type">{post.postType === 'question' ? '❓' : '📢'}</span>
-          <span className="post-folder">{post.folders.join(', ')}</span>
+          <span className="post-folder">{post.folders.map((folder: { name: any; }) => folder.name).join(', ')}</span>
           <span className="post-views">{post.viewedBy.length} views</span>
           <span className="post-author">Posted by {post.postBy}</span>
         </div>
@@ -235,17 +235,17 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
           <div className="student-answer">
             {studentAnswers.length > 0 ? (
               studentAnswers.map((answer: any) => (
-                <Answer 
-                  key={answer._id} 
-                  answer={answer} 
-                  currentUser={currentUser} 
+                <Answer
+                  key={answer._id}
+                  answer={answer}
+                  currentUser={currentUser}
                 />
               ))
             ) : (
               <div className="no-answers">No student answers yet</div>
             )}
           </div>
-          
+
           {canPostStudentAnswer && (
             <div className="answer-editor">
               <ReactQuill
@@ -255,7 +255,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
                 modules={modules}
                 formats={formats}
               />
-              <button 
+              <button
                 className="submit-button"
                 onClick={() => handleSubmitAnswer(false)}
                 disabled={!studentAnswer.trim()}
@@ -274,17 +274,17 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
           <div className="instructor-answer">
             {instructorAnswers.length > 0 ? (
               instructorAnswers.map((answer: any) => (
-                <Answer 
-                  key={answer._id} 
-                  answer={answer} 
-                  currentUser={currentUser} 
+                <Answer
+                  key={answer._id}
+                  answer={answer}
+                  currentUser={currentUser}
                 />
               ))
             ) : (
               <div className="no-answers">No instructor answers yet</div>
             )}
           </div>
-          
+
           {canPostInstructorAnswer && (
             <div className="answer-editor">
               <ReactQuill
@@ -294,7 +294,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
                 modules={modules}
                 formats={formats}
               />
-              <button 
+              <button
                 className="submit-button"
                 onClick={() => handleSubmitAnswer(true)}
                 disabled={!instructorAnswer.trim()}
@@ -309,20 +309,20 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
       {/* Followup Discussions Section */}
       <div className="discussions-section">
         <h3 className="answers-section-header">Followup Discussions</h3>
-        
+
         {/* Display existing discussions */}
         {discussions.length > 0 ? (
           discussions.map((discussion: any) => (
-            <Discussion 
-              key={discussion._id} 
-              discussion={discussion} 
-              currentUser={currentUser} 
+            <Discussion
+              key={discussion._id}
+              discussion={discussion}
+              currentUser={currentUser}
             />
           ))
         ) : (
           <div className="no-discussions">No followup discussions yet</div>
         )}
-        
+
         {/* New Discussion Editor */}
         {showDiscussionEditor ? (
           <div className="new-discussion">
@@ -334,14 +334,14 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
               formats={formats}
             />
             <div className="discussion-actions">
-              <button 
+              <button
                 className="submit-button"
                 onClick={handleSubmitDiscussion}
                 disabled={!newDiscussion.trim()}
               >
                 Start Discussion
               </button>
-              <button 
+              <button
                 className="cancel-button"
                 onClick={() => {
                   setNewDiscussion('');
@@ -354,7 +354,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onClose }) => {
           </div>
         ) : (
           <div className="new-discussion-button">
-            <button 
+            <button
               className="start-discussion-button"
               onClick={() => setShowDiscussionEditor(true)}
             >

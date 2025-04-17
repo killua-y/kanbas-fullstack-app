@@ -106,7 +106,7 @@ export default function Piazza() {
     return () => {
       isMounted = false;
     };
-  }, [cid]);
+  }, [cid, courseUsers, courseFolders]);
 
   // console.log(courseFolders)
   // Format users for the Editor component

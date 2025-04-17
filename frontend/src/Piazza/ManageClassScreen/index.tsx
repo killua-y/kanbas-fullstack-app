@@ -10,16 +10,15 @@ interface ManageClassScreenProps {
 
 export default function ManageClassScreen({ courseId, userId }: ManageClassScreenProps) {
     return (
-        <div className="piazza-container">
+        <div className="piazza-main">
             <MCSNavigation />
-            <div className="piazza-main">
-                <Routes>
-                    <Route
-                        path="manage-folders"
-                        element={<ManageFolderScreen courseId={courseId} userId={userId} />}
-                    />
-                </Routes>
-            </div>
+            <Routes>
+                <Route
+                    path="manage-folders"
+                    element={<ManageFolderScreen courseId={courseId} userId={userId} />}
+                />
+            </Routes>
         </div>
+
     );
 }

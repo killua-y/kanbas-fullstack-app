@@ -22,7 +22,7 @@ export const createPost = async (post) => {
  * @returns {Promise<Object>} - The found post or null
  */
 export const findPostById = async (postId) => {
-  return await PostModel.findById(postId).populate("folders").exec();
+  return await PostModel.findById(postId);
 };
 
 /**
@@ -31,7 +31,7 @@ export const findPostById = async (postId) => {
  * @returns {Promise<Array>} - Array of posts
  */
 export const findPostsForCourse = async (courseId) => {
-  return await PostModel.find({ course: courseId }).sort({ date: -1 }).populate("folders").exec();
+  return await PostModel.find({ course: courseId }).sort({ date: -1 });
 };
 
 /**
@@ -40,7 +40,7 @@ export const findPostsForCourse = async (courseId) => {
  * @returns {Promise<Array>} - Array of posts
  */
 export const findPostsForFolder = async (folderId) => {
-  return await PostModel.find({ folders: folderId }).sort({ date: -1 }).populate("folders").exec();
+  return await PostModel.find({ folders: folderId }).sort({ date: -1 });
 };
 
 /**
@@ -49,7 +49,7 @@ export const findPostsForFolder = async (folderId) => {
  * @returns {Promise<Array>} - Array of posts
  */
 export const findPostsByUser = async (userId) => {
-  return await PostModel.find({ postBy: userId }).sort({ date: -1 }).populate("folders").exec();
+  return await PostModel.find({ postBy: userId }).sort({ date: -1 });
 };
 
 /**
@@ -114,7 +114,7 @@ export const markPostAsRead = async (postId) => {
     postId,
     { $set: { isRead: true } },
     { new: true }
-  ).populate("folders").exec();
+  );
 };
 
 /**

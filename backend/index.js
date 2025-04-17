@@ -13,11 +13,7 @@ import EnrollmentRoutes from "./Kambaz/Enrollments/routes.js";
 import piazzaRoutes from "./Kambaz/Piazza/index.js";
 
 const CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING || "mongodb://127.0.0.1:27017/kambaz"
-mongoose.connect(CONNECTION_STRING)
-    .then(() => console.log("Connected to MongoDB successfully"))
-    .catch(err => {
-        console.error("MongoDB connection error:", err);
-    });
+mongoose.connect(CONNECTION_STRING);
 const app = express()
 app.use(
     cors({

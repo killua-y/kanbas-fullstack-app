@@ -11,8 +11,6 @@ interface PostListProps {
   onSelectPost: (post: any) => void;
   selectedPostId?: string;
   searchQuery?: string;
-  selectedFolderId: string | null; // <-- ADD prop
-  // courseId: string | undefined;
 }
 
 /**
@@ -61,7 +59,7 @@ interface PostGroup {
   isCollapsed: boolean;
 }
 
-export default function PostList({ onSelectPost, selectedPostId, searchQuery = '', selectedFolderId }: PostListProps) {
+export default function PostList({ onSelectPost, selectedPostId, searchQuery = '' }: PostListProps) {
   const { cid } = useParams();
   const { posts } = useSelector((state: any) => state.postsReducer);
   const { currentUser } = useSelector((state: any) => state.accountReducer);
@@ -70,57 +68,26 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
   const [userMap, setUserMap] = useState<Record<string, User>>({});
   const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({});
 
-  // const fetchPostForCourse = async () => {
-  //   const data = await postClient.findPostsForCourse(cid!);
-  //   dispatch(setPosts(data));
-  // };
+  const fetchPostForCourse = async () => {
+    const data = await postClient.findPostsForCourse(cid!);
+    dispatch(setPosts(data));
+  };
 
-  // useEffect(() => {
-  //   fetchPostForCourse();
-  // }, [cid]);
   useEffect(() => {
-    const fetchPostsBasedOnFilter = async () => {
-      // Only fetch if courseId is provided
-      if (!cid) {
-        dispatch(setPosts([])); // Clear posts if no course ID
-        return;
-      }
-
-      console.log(`Fetching posts for course ${cid}, folder ${selectedFolderId || 'All'}`); // Debug log
-
-      try {
-        let fetchedPosts;
-        if (selectedFolderId) {
-          // Fetch posts for the specific folder
-          fetchedPosts = await postClient.findPostsForFolder(selectedFolderId);
-        } else {
-          // Fetch all posts for the course
-          fetchedPosts = await postClient.findPostsForCourse(cid);
-        }
-        // Update the Redux store with the fetched posts
-        dispatch(setPosts(fetchedPosts));
-      } catch (err: any) {
-        console.error("Error fetching posts:", err);
-        // setError(err.response?.data?.message || "Failed to load posts.");
-        dispatch(setPosts([])); // Clear posts on error
-      }
-    };
-
-    fetchPostsBasedOnFilter();
-    // Dependency array includes courseId and selectedFolderId
-  }, [cid, selectedFolderId, dispatch]);
+    fetchPostForCourse();
+  }, [cid]);
 
   // Fetch user data for all posts
   useEffect(() => {
     const fetchUserData = async () => {
       if (!posts || posts.length === 0) return;
-
+      
       // Get unique user IDs from posts
       const userIds = [...new Set(posts.map((post: Post) => post.postBy))];
-
+      
       // Fetch user data for each ID
       const userData: Record<string, User> = {};
-
+      
       for (const userId of userIds) {
         try {
           const user = await userClient.findUserById(userId as string);
@@ -131,10 +98,10 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
           userData[userId as string] = { _id: userId as string, username: 'Unknown User', role: 'UNKNOWN' };
         }
       }
-
+      
       setUserMap(userData);
     };
-
+    
     fetchUserData();
   }, [posts]);
 
@@ -171,13 +138,13 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
   useEffect(() => {
     const filteredPosts = getFilteredPosts();
     const groups: PostGroup[] = [];
-
+    
     // Get date boundaries
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
-
+    
     // Calculate last week's boundaries (Sunday to Saturday)
     const lastWeekEnd = new Date(today);
     lastWeekEnd.setDate(today.getDate() - today.getDay() - 1); // Last Saturday
@@ -202,9 +169,9 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
     });
     if (todayPosts.length > 0) {
       const title = 'TODAY';
-      groups.push({
-        title,
-        posts: todayPosts,
+      groups.push({ 
+        title, 
+        posts: todayPosts, 
         isCollapsed: collapsedState[title] ?? false
       });
     }
@@ -216,9 +183,9 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
     });
     if (yesterdayPosts.length > 0) {
       const title = 'YESTERDAY';
-      groups.push({
-        title,
-        posts: yesterdayPosts,
+      groups.push({ 
+        title, 
+        posts: yesterdayPosts, 
         isCollapsed: collapsedState[title] ?? true
       });
     }
@@ -230,9 +197,9 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
     });
     if (lastWeekPosts.length > 0) {
       const title = 'LAST WEEK';
-      groups.push({
-        title,
-        posts: lastWeekPosts,
+      groups.push({ 
+        title, 
+        posts: lastWeekPosts, 
         isCollapsed: collapsedState[title] ?? true
       });
     }
@@ -266,9 +233,9 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
         return dateB.getTime() - dateA.getTime();
       })
       .forEach(([weekKey, weekPosts]) => {
-        groups.push({
-          title: weekKey,
-          posts: weekPosts,
+        groups.push({ 
+          title: weekKey, 
+          posts: weekPosts, 
           isCollapsed: collapsedState[weekKey] ?? true
         });
       });
@@ -299,7 +266,7 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
       try {
         const updatedPost = await postClient.viewPost(post._id, currentUser._id);
         const readPost = await postClient.markPostAsRead(post._id);
-        const updatedPosts = posts.map((p: Post) =>
+        const updatedPosts = posts.map((p: Post) => 
           p._id === post._id ? { ...readPost, viewedBy: updatedPost.viewedBy } : p
         );
         dispatch(setPosts(updatedPosts));
@@ -312,16 +279,12 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
       onSelectPost(post);
     }
   };
-  // const handlePostClick = (postId: string) => {
-  //   onSelectPost(postId); // Just call the callback prop with the ID
-  // };
-
 
   return (
     <div className="post-list">
       {postGroups.map((group, index) => (
         <div key={group.title} className="post-group">
-          <div
+          <div 
             className="post-group-header"
             onClick={() => toggleGroup(index)}
           >
@@ -330,7 +293,7 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
             </span>
             <span className="group-title">{group.title}</span>
           </div>
-
+          
           {!group.isCollapsed && (
             <div className="post-group-content">
               {group.posts.map((post: Post) => {
@@ -344,7 +307,7 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
                     <div className="post-icon">
                       {post.postType === 'note' ? '📢' : '❓'}
                     </div>
-
+                    
                     <div className="post-content">
                       <div className="post-header">
                         <span className="post-title">{post.title}</span>
@@ -376,7 +339,7 @@ export default function PostList({ onSelectPost, selectedPostId, searchQuery = '
                             ));
                         })()}
                       </div>
-
+                      
                       <div className="post-meta">
                         <span className={`post-author ${user.role === 'FACULTY' ? 'instructor' : 'student'}`}>
                           {user.username}

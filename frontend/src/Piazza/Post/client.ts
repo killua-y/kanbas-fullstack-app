@@ -18,11 +18,6 @@ export const findPostById = async (postId: string) => {
     return response.data;
 }
 
-export const findPostsForFolder = async (folderId: string) => {
-    const response = await axiosWithCredentials.get(`${POSTS_API}/folder/${folderId}`);
-    return response.data;
-}
-
 /**
  * View a post with a user ID, which adds the user to the post's viewedBy list
  * @param postId The ID of the post to view

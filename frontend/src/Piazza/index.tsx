@@ -6,19 +6,11 @@ import TopNavigation from './components/TopNavigation';
 import ClassGlance from './components/ClassGlance';
 import Editor from './Post/Editor';
 import PostView from './Post/PostView';
-import { Link, Route, Routes, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addPost } from './Post/reducer';
 import * as postClient from './Post/client';
 import * as courseClient from '../Kambaz/Courses/client';
-import * as folderClient from '../Piazza/ManageFolderScreen/client'
-import { Navigate } from 'react-router';
-import ManageClassScreen from './ManageClassScreen';
-
-interface FolderOption {
-  _id: string;
-  name: string;
-}
 
 export default function Piazza() {
   const { cid } = useParams(); // Get course ID from URL
@@ -28,87 +20,30 @@ export default function Piazza() {
   const [courseUsers, setCourseUsers] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
-  const [courseFolders, setCourseFolders] = useState<FolderOption[]>([]);
-  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
-
   const dispatch = useDispatch();
 
-  // // Fetch users for the course when component mounts
-  // useEffect(() => {
-  //   const fetchCourseUsers = async () => {
-  //     if (cid) {
-  //       try {
-  //         const users = await courseClient.findUsersForCourse(cid);
-  //         // Sort users to display FACULTY at the top
-  //         const sortedUsers = users.sort((a: any, b: any) => {
-  //           if (a.role === 'FACULTY' && b.role !== 'FACULTY') return -1;
-  //           if (a.role !== 'FACULTY' && b.role === 'FACULTY') return 1;
-  //           return 0;
-  //         });
-  //         setCourseUsers(sortedUsers);
-  //       } catch (error) {
-  //         console.error("Error fetching course users:", error);
-  //       }
-  //     }
-  //   };
-
-  //   fetchCourseUsers();
-  // }, [cid]);
-
+  // Fetch users for the course when component mounts
   useEffect(() => {
-    let isMounted = true; // Prevent state update on unmounted component
-
-    const fetchData = async () => {
+    const fetchCourseUsers = async () => {
       if (cid) {
-        // Fetch Users
         try {
           const users = await courseClient.findUsersForCourse(cid);
-          if (isMounted) {
-            const sortedUsers = users.sort((a: any, b: any) => {
-              if (a.role === 'FACULTY' && b.role !== 'FACULTY') return -1;
-              if (a.role !== 'FACULTY' && b.role === 'FACULTY') return 1;
-              return 0;
-            });
-            setCourseUsers(sortedUsers);
-          }
+          // Sort users to display FACULTY at the top
+          const sortedUsers = users.sort((a: any, b: any) => {
+            if (a.role === 'FACULTY' && b.role !== 'FACULTY') return -1;
+            if (a.role !== 'FACULTY' && b.role === 'FACULTY') return 1;
+            return 0;
+          });
+          setCourseUsers(sortedUsers);
         } catch (error) {
           console.error("Error fetching course users:", error);
-          // Handle user fetch error if needed
-        }
-
-        // Fetch Folders
-        // setFoldersError(null); // Reset error on new fetch
-        try {
-          const folders = await folderClient.findFoldersByCourse(cid);
-          if (isMounted) {
-            // Assuming folders have _id and name properties from the API
-            setCourseFolders(folders.map((f: { _id: any; name: any; }) => ({ _id: f._id, name: f.name })));
-          }
-        } catch (error: any) {
-          console.error("Error fetching course folders:", error);
-          if (isMounted) {
-            console.log(error.response?.data?.message || "Failed to load folders.");
-            setCourseFolders([]); // Clear folders on error
-          }
-        }
-      } else {
-        // Clear data if cid is not present
-        if (isMounted) {
-          setCourseUsers([]);
-          setCourseFolders([]);
         }
       }
     };
-
-    fetchData();
-
-    // Cleanup function to prevent setting state on unmounted component
-    return () => {
-      isMounted = false;
-    };
+    
+    fetchCourseUsers();
   }, [cid]);
 
-  // console.log(courseFolders)
   // Format users for the Editor component
   const formattedUsers = courseUsers.map(user => ({
     id: user._id,
@@ -116,7 +51,7 @@ export default function Piazza() {
     role: user.role
   }));
 
-  // const mockFolders = ['hw1', 'hw2', 'hw3', 'hw4', 'hw5', 'hw6', 'project', 'exam', 'logistics', 'other', 'office_hours'];
+  const mockFolders = ['hw1', 'hw2', 'hw3', 'hw4', 'hw5', 'hw6', 'project', 'exam', 'logistics', 'other', 'office_hours'];
 
   const handleNewPost = () => {
     setIsEditing(true);
@@ -129,12 +64,6 @@ export default function Piazza() {
 
   const handleSubmitPost = async (postData: any) => {
     try {
-      const selectedFolderNames = postData.folders; // Assuming this is an array of names from Editor
-      console.log(postData)
-      // Find the corresponding IDs from the full courseFolders list
-      const selectedFolderIds = courseFolders
-        .filter(folder => selectedFolderNames.includes(folder.name)) // Filter by selected names
-        .map(folder => folder._id);
       // Format the post data according to the backend schema
       const formattedPost = {
         postType: postData.type.toLowerCase(),
@@ -143,7 +72,7 @@ export default function Piazza() {
         text: postData.details,
         postBy: currentUser?._id || '0', // Use current user ID or fallback to mock ID
         course: cid,
-        folders: selectedFolderIds,
+        folders: postData.folders,
         individualRecipients: postData.visibility === 'individual' ? postData.visibleTo : [],
         viewedBy: [],
         isResolved: false,
@@ -154,10 +83,10 @@ export default function Piazza() {
 
       // Create the post using the client
       const newPost = await postClient.createPost(formattedPost);
-
+      
       // Update the Redux store with the new post
       dispatch(addPost(newPost));
-
+      
       // Close the editor and select the new post
       setIsEditing(false);
       setSelectedPost(newPost);
@@ -191,100 +120,68 @@ export default function Piazza() {
     setIsSidebarVisible(!isSidebarVisible);
   };
 
-  const handleSelectFolder = (folderId: string | null) => {
-    setSelectedFolderId(folderId);
-  };
-
   return (
     <div className="piazza-container">
       <div className="piazza-header">
         <div className="course-info">
           <h1>Course {cid}</h1>
           <div className="header-links">
-            <Link to={`/Kambaz/Courses/${cid}/Piazza`}
-              className={location.pathname.endsWith('/Piazza') ? 'active' : ''}>
-              Q & A
-            </Link>
+            <a href="#" className="active">Q & A</a>
             <a href="#">Resources</a>
             <a href="#">Statistics</a>
-            <Link to={`/Kambaz/Courses/${cid}/Piazza/manage`}
-              className={location.pathname.includes('/manage') ? 'active' : ''}>
-              Manage Class
-            </Link>
+            <a href="#">Manage Class</a>
           </div>
         </div>
         <div className="user-controls">
           <span className="user-name">{currentUser?.username || "Jose Annunziato"}</span>
         </div>
       </div>
-      <Routes>
-        <Route path="/" element={
-          <>
-            <TopNavigation
-              isSidebarVisible={isSidebarVisible}
-              onToggleSidebar={handleToggleSidebar}
-              folders={courseFolders} // Pass fetched folders
-              selectedFolderId={selectedFolderId} // Pass selected ID
-              onSelectFolder={handleSelectFolder}
-            />
-
-            <div className="piazza-main">
-              <div className="content-wrapper">
-
-                <div className={`post-section ${!isSidebarVisible ? 'hidden' : ''}`}>
-                  <div className="post-controls">
-                    <button className="new-post" onClick={handleNewPost}>New Post</button>
-                    <input
-                      type="search"
-                      placeholder="Search or add a post..."
-                      value={searchQuery}
-                      onChange={handleSearch}
-                      onKeyPress={handleSearchKeyPress}
-                    />
-                    <button className="show-actions">Show Actions</button>
-                  </div>
-                  <PostList
-                    onSelectPost={handleSelectPost}
-                    selectedPostId={selectedPost?._id}
-                    searchQuery={searchQuery}
-                    selectedFolderId={selectedFolderId} // Pass selected folder ID
-                  />
-                </div>
-
-                <div className={`side-panel ${!isSidebarVisible ? 'expanded' : ''}`}>
-                  {isEditing ? (
-                    <Editor
-                      onCancel={handleCancelPost}
-                      onSubmit={handleSubmitPost}
-                      users={formattedUsers}
-                      folders={courseFolders.map(folder => folder.name)}
-                    />
-                  ) : selectedPost ? (
-                    <PostView
-                      post={selectedPost}
-                      onClose={handleClosePostView}
-                    />
-                  ) : (
-                    <ClassGlance courseId={cid} />
-                  )}
-                </div>
-
-
-
-              </div>
+      
+      <TopNavigation 
+        isSidebarVisible={isSidebarVisible}
+        onToggleSidebar={handleToggleSidebar}
+      />
+      
+      <div className="piazza-main">
+        <div className="content-wrapper">
+          <div className={`post-section ${!isSidebarVisible ? 'hidden' : ''}`}>
+            <div className="post-controls">
+              <button className="new-post" onClick={handleNewPost}>New Post</button>
+              <input 
+                type="search" 
+                placeholder="Search or add a post..." 
+                value={searchQuery}
+                onChange={handleSearch}
+                onKeyPress={handleSearchKeyPress}
+              />
+              <button className="show-actions">Show Actions</button>
             </div>
-          </>
-        } />
-        <Route path="manage/*" element={cid && currentUser._id ? (
-          <ManageClassScreen courseId={cid} userId={currentUser._id} />
-        ) : (
-          // Optional: Render a loading state, redirect, or null while waiting for data
-          // For example, redirect to the main Piazza page or a login page
-          // <Navigate to={`/Kambaz/Courses/${cid}/Piazza`} replace />
-          <div>Loading management data or user not logged in...</div> // Or null
-        )} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+            <PostList 
+              onSelectPost={handleSelectPost} 
+              selectedPostId={selectedPost?._id}
+              searchQuery={searchQuery}
+            />
+          </div>
+          
+          <div className={`side-panel ${!isSidebarVisible ? 'expanded' : ''}`}>
+            {isEditing ? (
+              <Editor
+                onCancel={handleCancelPost}
+                onSubmit={handleSubmitPost}
+                users={formattedUsers}
+                folders={mockFolders}
+              />
+            ) : selectedPost ? (
+              <PostView
+                post={selectedPost}
+                onClose={handleClosePostView}
+              />
+            ) : (
+              <ClassGlance courseId={cid} />
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 } 

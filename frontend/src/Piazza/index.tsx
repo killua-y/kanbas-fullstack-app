@@ -207,10 +207,18 @@ export default function Piazza() {
             </Link>
             <a href="#">Resources</a>
             <a href="#">Statistics</a>
-            <Link to={`/Kambaz/Courses/${cid}/Piazza/manage`}
-              className={location.pathname.includes('/manage') ? 'active' : ''}>
+            {/* <Link to={`/Kambaz/Courses/${cid}/Piazza/manage`}
+              className={}>
               Manage Class
-            </Link>
+            </Link> */}
+            {currentUser?.role === 'FACULTY' && (
+              <Link
+                to={`/Kambaz/Courses/${cid}/Piazza/manage`}
+                className={location.pathname.includes('/manage') ? 'active' : ''}
+              >
+                Manage Class
+              </Link>
+            )}
           </div>
         </div>
         <div className="user-controls">

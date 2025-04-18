@@ -15,9 +15,10 @@ interface Folder {
 interface ManageFoldersProps {
   courseId: string; // ID of the current course
   userId: string;   // ID of the logged-in user
+  onFoldersChanged?: () => void; // Callback function to notify parent component of changes
 }
 
-export default function ManageFolders({ courseId, userId }: ManageFoldersProps) {
+export default function ManageFolders({ courseId, userId, onFoldersChanged }: ManageFoldersProps) {
   const [folders, setFolders] = useState<Folder[]>([]);
   const [newFolderName, setNewFolderName] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -56,6 +57,11 @@ export default function ManageFolders({ courseId, userId }: ManageFoldersProps) 
       await folderClient.createFolder(folderData);
       setNewFolderName(''); // Clear input
       await fetchFolders(); // Re-fetch the list to show the new folder
+      
+      // Notify parent component that folders have changed
+      if (onFoldersChanged) {
+        onFoldersChanged();
+      }
     } catch (err: any) {
       console.error("Error adding folder:", err);
     }
@@ -66,6 +72,11 @@ export default function ManageFolders({ courseId, userId }: ManageFoldersProps) 
       // Use the client function to delete the folder
       await folderClient.deleteFolder(id);
       await fetchFolders(); // Re-fetch the list to reflect the deletion
+      
+      // Notify parent component that folders have changed
+      if (onFoldersChanged) {
+        onFoldersChanged();
+      }
     } catch (err: any) {
       console.error("Error deleting folder:", err);
     }
@@ -90,6 +101,11 @@ export default function ManageFolders({ courseId, userId }: ManageFoldersProps) 
       await folderClient.updateFolder(editingId, updateData);
       cancelEditing(); // Clear editing state
       await fetchFolders(); // Re-fetch the list to show the updated folder
+      
+      // Notify parent component that folders have changed
+      if (onFoldersChanged) {
+        onFoldersChanged();
+      }
     } catch (err: any) {
       console.error("Error updating folder:", err);
     }
